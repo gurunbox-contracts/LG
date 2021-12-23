@@ -13,6 +13,8 @@ import {IVaultFactory} from './IVaultFactory.sol';
 contract Vault is IVault, Ownable{
     address public override vaultFactory;
     address public override receiver; 
+    uint public override requestedTime;
+    uint public override gracePeriod;
 
     constructor() {
         vaultFactory = msg.sender;
@@ -62,6 +64,10 @@ contract Vault is IVault, Ownable{
         IERC721(token).transferFrom(address(this), to, tokenId);
     }
 
+    function changeGracePeriod(uint _gracePeriod) public onlyOwner {
+        gracePeriod = _gracePeriod;
+    }
+
     function changeReceiver(address _receiver) external override {
         require(receiver == msg.sender, "Vault: Not receiver");
         receiver = _receiver;
@@ -69,11 +75,19 @@ contract Vault is IVault, Ownable{
         emit TransferReceiver(msg.sender, receiver);
     }
 
+    function request() external override {
+        require(receiver == msg.sender, "Vault: Not receiver");
+        requestedTime = block.timestamp;
+        
+        emit Requested(requestedTime);
+    }
+
     function claimETH(address payable to) external override {
         require(receiver == msg.sender, "Vault: Not receiver");
         require(condition(), "Vault: Condition not met");
+        require(block.timestamp >= requestedTime + gracePeriod, "Vault: Grace period not over");
 
-        // To can receive Ether since the address of To is payable
+        // To receive Ether since the address of To is payable
         uint _value = address(this).balance;
         (bool success, ) = to.call{value: _value}("");
         require(success, "Failed to send Ether");
@@ -84,6 +98,7 @@ contract Vault is IVault, Ownable{
     function craim20(address token, address to) external override {
         require(receiver == msg.sender, "Vault: Not receiver");
         require(condition(), "Vault: Condition not met");
+        require(block.timestamp >= requestedTime + gracePeriod, "Vault: Grace period not over");
 
         IERC20(token).transfer(to, address(this).balance);
     }
@@ -91,6 +106,7 @@ contract Vault is IVault, Ownable{
     function claim721(address token, address to, uint tokenId) external override {
         require(receiver == msg.sender, "Vault: Not receiver");
         require(condition(), "Vault: Condition not met");
+        require(block.timestamp >= requestedTime + gracePeriod, "Vault: Grace period not over");
 
         IERC721(token).transferFrom(address(this), to, tokenId);
     }
