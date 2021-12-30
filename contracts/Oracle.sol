@@ -37,18 +37,11 @@ contract Oracle is IOracle, Ownable {
         numerator = _numerator;
         denominator = _denominator;
 
-        for (uint i = 0; i < trustees.length; i++) {
+        for (uint i = 0; i < trustees.length; i++) { // i = trusteeId
             trusteeIds[trustees[i]] = i;
 
             emit TransferTrustee(address(0), trustees[i], i);
         }
-    }
-
-    function changeTrustee(address _trustee, uint trusteeId) external override {
-        require(trustees[trusteeId] == msg.sender, "Vault: Not a trustee.");
-        trustees[trusteeId] = _trustee;
-
-        emit TransferTrustee(msg.sender, _trustee, trusteeId);
     }
 
     function judge(bool TF, uint trusteeId) external override returns (uint) {
