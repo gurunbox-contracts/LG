@@ -68,11 +68,11 @@ contract Vault is IVault, Ownable{
         gracePeriod = _gracePeriod;
     }
 
-    function changeReceiver(address _receiver) external override {
-        require(receiver == msg.sender, "Vault: Not receiver");
+    function changeReceiver(address _receiver) public onlyOwner {
+        address preReceiver = receiver;
         receiver = _receiver;
 
-        emit TransferReceiver(msg.sender, receiver);
+        emit TransferReceiver(preReceiver, receiver);
     }
 
     function request() external override {
