@@ -11,6 +11,7 @@ interface IVault {
     function receiver() external view returns (address);
     function requestedTime() external view returns (uint);
     function gracePeriod() external view returns (uint);
+    function oracle() external view returns (address);
 
     function initialize(address _owner, address _receiver) external;
     function request() external;

@@ -15,13 +15,14 @@ contract Vault is IVault, Ownable{
     address public override receiver; 
     uint public override requestedTime;
     uint public override gracePeriod;
+    address public override oracle;
 
     constructor() {
         vaultFactory = msg.sender;
     }
 
     function condition() public view returns (bool) {
-        return IVaultFactory(vaultFactory).condition();
+        return IOracle(oracle).condition();
     }
     
     // called once by the factory at time of deployment
@@ -29,6 +30,7 @@ contract Vault is IVault, Ownable{
         require(msg.sender == vaultFactory, 'Vault: FORBIDDEN'); // sufficient check
         transferOwnership(_owner);
         receiver = _receiver;
+        oracle = msg.sender;
 
         emit TransferReceiver(address(0), receiver);
     }
@@ -64,6 +66,10 @@ contract Vault is IVault, Ownable{
         IERC721(token).transferFrom(address(this), to, tokenId);
     }
 
+    function changeOracle(address _oracle) public onlyOwner {
+        oracle = _oracle;
+    }
+
     function changeGracePeriod(uint _gracePeriod) public onlyOwner {
         gracePeriod = _gracePeriod;
     }
@@ -77,6 +83,7 @@ contract Vault is IVault, Ownable{
 
     function request() external override {
         require(receiver == msg.sender, "Vault: Not receiver");
+        require(condition(), "Vault: Condition not met");
         requestedTime = block.timestamp;
         
         emit Requested(requestedTime);
