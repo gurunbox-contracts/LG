@@ -13,8 +13,8 @@ interface IOracle {
     function numerator() external view returns (uint);
     function denominator() external view returns (uint);
 
+    function getTrusteeIds(address _trustee) external view returns (uint[] memory);
     function trusteeOpinion(uint trusteeId) external view returns (bool);
-    function trusteeIds(address _trustee) external view returns (uint);
 
     function judge(bool TF, uint trusteeId) external returns (uint);   
 }

@@ -15,8 +15,8 @@ contract Oracle is IOracle, Ownable {
     uint public override numerator = 1;
     uint public override denominator = 1;
     
+    mapping(address => uint[]) private trusteeIds;
     mapping(uint => bool) public override trusteeOpinion;
-    mapping(address => uint) public override trusteeIds;
 
     constructor(string memory name_, address _owner) {
         _name = name_;
@@ -31,16 +31,18 @@ contract Oracle is IOracle, Ownable {
         return _name;
     }
 
+    function getTrusteeIds(address _trustee) public view override returns (uint[] memory) {
+        return trusteeIds[_trustee];
+    }
+
     function setTrustees(address[] memory _trustees, uint _numerator, uint _denominator) public onlyOwner {
         require(_numerator <= _denominator, "Vault: Numerator must be less than or equal to denominator");
         trustees = _trustees;
         numerator = _numerator;
         denominator = _denominator;
 
-        for (uint i = 0; i < trustees.length; i++) { // i = trusteeId
-            trusteeIds[trustees[i]] = i;
-
-            emit TransferTrustee(address(0), trustees[i], i);
+        for (uint i = 0; i < trustees.length; i++) {
+            trusteeIds[trustees[i]].push(i);
         }
     }
 
