@@ -35,11 +35,11 @@ contract Oracle is IOracle, Ownable {
         return trusteeIds[_trustee];
     }
 
-    function setTrustees(address[] memory _trustees, uint _numerator, uint _denominator) public onlyOwner {
-        require(_numerator <= _denominator, "Vault: Numerator must be less than or equal to denominator");
+    function setTrustees(address[] memory _trustees, uint _numerator) public onlyOwner {
+        require(_numerator <= trustees.length, "Vault: Numerator must be less than or equal to denominator");
         trustees = _trustees;
         numerator = _numerator;
-        denominator = _denominator;
+        denominator = trustees.length;
 
         for (uint i = 0; i < trustees.length; i++) {
             trusteeIds[trustees[i]].push(i);
