@@ -11,5 +11,5 @@ interface IVaultFactory is IOracle {
     function vaultNumber() external view returns (uint);
     function getReceivers(uint vaultId) external view returns (address);
 
-    function createVault(address owner, address receiver) external returns (address vault);
+    function createVault(address receiver) external returns (address vault);
 }

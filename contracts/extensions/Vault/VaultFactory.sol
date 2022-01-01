@@ -27,25 +27,19 @@ contract VaultFactory is Oracle, IVaultFactory {
         return IVault(getVaults[vaultId]).receiver();
     }
 
-    function _createVault(address _owner, address _receiver) internal returns (address _vault) {
-        require(_owner != address(0), 'VaultFactory: OWNER_ZERO_ADDRESS');
-        require(_receiver != address(0), 'VaultFactory: RECEIVER_ZERO_ADDRESS');
+    function createVault(address receiver) external override onlyOwner returns (address vault) {
+        require(receiver != address(0), 'VaultFactory: RECEIVER_ZERO_ADDRESS');
         
         bytes memory bytecode = type(Vault).creationCode;
-        bytes32 salt = keccak256(abi.encodePacked(_owner, _receiver, block.timestamp));
-        _vault = Create2.deploy(0, salt, bytecode);
+        bytes32 salt = keccak256(abi.encodePacked(owner(), receiver, block.timestamp));
+        vault = Create2.deploy(0, salt, bytecode);
 
-        IVault(_vault).initialize(_owner, _receiver, nextVaultId);
+        IVault(vault).initialize(owner(), receiver, nextVaultId);
 
-        getVaults[nextVaultId] = _vault;
+        getVaults[nextVaultId] = vault;
         nextVaultId++;
         
-
-        emit VaultCreated(_owner, _receiver, _vault, nextVaultId - 1);
-    }
-
-    function createVault(address _owner, address receiver) external override onlyOwner returns (address vault) {
-        vault = _createVault(_owner, receiver);
+        emit VaultCreated(owner(), receiver, vault, nextVaultId - 1);
     } 
 
 }

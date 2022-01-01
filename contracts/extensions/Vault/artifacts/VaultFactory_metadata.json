@@ -120,11 +120,6 @@
 				"inputs": [
 					{
 						"internalType": "address",
-						"name": "_owner",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
 						"name": "receiver",
 						"type": "address"
 					}
@@ -473,11 +468,11 @@
 			]
 		},
 		"extensions/Vault/IVaultFactory.sol": {
-			"keccak256": "0x0e37ad7a9f9be64e08f6e94315b0c706713551b21b4dc30cd05e4c4a288de83e",
+			"keccak256": "0x5d8b050c15c10e8399e6f73386de860171f2b46e7520f5efc6f03cc1a8a7095b",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://da8adf7a1acbaeec2f0d437f9c137cde38bef95aefe91dd954211945ec080fe0",
-				"dweb:/ipfs/QmTBAuuTYfwWDocsMqxPxtq5UpqPsuEGFQuPZVzE2cgAH3"
+				"bzz-raw://559ba2ea5053a5308b1410103df63aa5ea2f39d816f93b92b13dedd2053919e0",
+				"dweb:/ipfs/QmS13e6bscAH47cPTYwkKNeuvJKVS26nHnGxsQ5efFLfhL"
 			]
 		},
 		"extensions/Vault/Vault.sol": {
@@ -489,11 +484,11 @@
 			]
 		},
 		"extensions/Vault/VaultFactory.sol": {
-			"keccak256": "0xcd084476fadc7bb272077ae5841e8046adc3f31211dba7531425b934f507bb4e",
+			"keccak256": "0x93664722d86377e8a3eada4b1a0025ac7913f79da97d2db11329d82a7df8cbee",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://01a79d08b311088b8cce2fa0091934b5c9e464a43ad917dae15062664d1ce1f0",
-				"dweb:/ipfs/QmU8dEzQUgJqDprXoDsDgVkNYHJ8skc7FjMQnvRNtwjnUh"
+				"bzz-raw://b8f18a38f83c78886ebbda473130779e8c8909988069463c4c25f935fde8319e",
+				"dweb:/ipfs/QmRE6qEdAkeTMySK5tbegZs86MyDXcoBHvf1cZPpqdHi98"
 			]
 		}
 	},
