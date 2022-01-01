@@ -8,7 +8,7 @@ interface IOracle {
     function condition() external view returns (bool);
     function name() external view returns (string memory);
     function conditionCounter() external view returns (uint);
-    function trustees() external view returns (address[] memory);
+    function trustees(uint) external view returns (address);
     function numerator() external view returns (uint);
     function denominator() external view returns (uint);
 
