@@ -12,7 +12,8 @@ import {IVaultFactory} from './IVaultFactory.sol';
 
 contract Vault is IVault, Ownable{
     address public override vaultFactory;
-    address public override receiver; 
+    address public override receiver;
+    uint public override vaultId; 
     uint public override requestedTime;
     uint public override gracePeriod;
     address public override oracle;
@@ -26,11 +27,12 @@ contract Vault is IVault, Ownable{
     }
     
     // called once by the factory at time of deployment
-    function initialize(address _owner, address _receiver) external override {
+    function initialize(address _owner, address _receiver, uint _vaultId) external override {
         require(msg.sender == vaultFactory, 'Vault: FORBIDDEN'); // sufficient check
         transferOwnership(_owner);
         receiver = _receiver;
         oracle = msg.sender;
+        vaultId = _vaultId;
 
         emit TransferReceiver(address(0), receiver);
     }

@@ -35,7 +35,7 @@ contract VaultFactory is Oracle, IVaultFactory {
         bytes32 salt = keccak256(abi.encodePacked(_owner, _receiver, block.timestamp));
         _vault = Create2.deploy(0, salt, bytecode);
 
-        IVault(_vault).initialize(_owner, _receiver);
+        IVault(_vault).initialize(_owner, _receiver, nextVaultId);
 
         getVaults[nextVaultId] = _vault;
         nextVaultId++;
