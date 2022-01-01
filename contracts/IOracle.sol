@@ -15,5 +15,6 @@ interface IOracle {
     function getTrusteeIds(address _trustee) external view returns (uint[] memory);
     function trusteeOpinion(uint trusteeId) external view returns (bool);
 
+    function setTrustees(address[] memory _trustees, uint _numerator) external;
     function judge(bool TF, uint trusteeId) external returns (uint);   
 }

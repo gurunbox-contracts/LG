@@ -36,19 +36,19 @@ contract Vault is IVault, Ownable{
     }
 
     // It is not neccessarily important to use deposit function
-    function depositETH() public payable onlyOwner {
+    function depositETH() external override payable onlyOwner {
         emit TransferETH(msg.sender, address(this), msg.value);
     }
 
-    function deposit20(address token, uint amount) public onlyOwner {
+    function deposit20(address token, uint amount) external override onlyOwner {
         IERC20(token).transferFrom(msg.sender, address(this), amount);
     }
 
-    function deposit721(address token, uint tokenId) public onlyOwner {
+    function deposit721(address token, uint tokenId) external override onlyOwner {
         IERC721(token).transferFrom(msg.sender, address(this), tokenId);
     }
 
-    function withdrawETH(address payable to, uint _value) public onlyOwner {
+    function withdrawETH(address payable to, uint _value) external override onlyOwner {
         require(address(this).balance >= _value, "Vault: Insufficient value");
 
         // To can receive Ether since the address of to is payable
@@ -58,23 +58,23 @@ contract Vault is IVault, Ownable{
         emit TransferETH(address(this), to, _value);
     }
 
-    function withdraw20(address token, address to, uint amount) public onlyOwner {
+    function withdraw20(address token, address to, uint amount) external override onlyOwner {
         IERC20(token).transfer(to, amount);
     }
 
-    function withdraw721(address token, address to, uint tokenId) public onlyOwner {
+    function withdraw721(address token, address to, uint tokenId) external override onlyOwner {
         IERC721(token).transferFrom(address(this), to, tokenId);
     }
 
-    function changeOracle(address _oracle) public onlyOwner {
+    function changeOracle(address _oracle) external override onlyOwner {
         oracle = _oracle;
     }
 
-    function changeGracePeriod(uint _gracePeriod) public onlyOwner {
+    function changeGracePeriod(uint _gracePeriod) external override onlyOwner {
         gracePeriod = _gracePeriod;
     }
 
-    function changeReceiver(address _receiver) public onlyOwner {
+    function changeReceiver(address _receiver) external override onlyOwner {
         address preReceiver = receiver;
         receiver = _receiver;
 

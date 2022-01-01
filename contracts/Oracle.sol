@@ -35,7 +35,7 @@ contract Oracle is IOracle, Ownable {
         return trusteeIds[_trustee];
     }
 
-    function setTrustees(address[] memory _trustees, uint _numerator) public onlyOwner {
+    function setTrustees(address[] memory _trustees, uint _numerator) external override onlyOwner {
         require(_numerator <= trustees.length, "Vault: Numerator must be less than or equal to denominator");
         trustees = _trustees;
         numerator = _numerator;

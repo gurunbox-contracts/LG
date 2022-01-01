@@ -63,31 +63,6 @@
 				"anonymous": false,
 				"inputs": [
 					{
-						"indexed": true,
-						"internalType": "address",
-						"name": "previousTrustee",
-						"type": "address"
-					},
-					{
-						"indexed": true,
-						"internalType": "address",
-						"name": "newTrustee",
-						"type": "address"
-					},
-					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "trusteeId",
-						"type": "uint256"
-					}
-				],
-				"name": "TransferTrustee",
-				"type": "event"
-			},
-			{
-				"anonymous": false,
-				"inputs": [
-					{
 						"indexed": false,
 						"internalType": "address",
 						"name": "owner",
@@ -104,6 +79,12 @@
 						"internalType": "address",
 						"name": "vault",
 						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "vaultId",
+						"type": "uint256"
 					}
 				],
 				"name": "VaultCreated",
@@ -310,11 +291,6 @@
 						"internalType": "uint256",
 						"name": "_numerator",
 						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "_denominator",
-						"type": "uint256"
 					}
 				],
 				"name": "setTrustees",
@@ -473,19 +449,19 @@
 			]
 		},
 		"IOracle.sol": {
-			"keccak256": "0xb7396763bd5d49ff7c16c195a41ccc13af4165c6be15af7ed5eb216b3d721ec6",
+			"keccak256": "0xc1edc7741354a7ca44ed803c8218e467a177b65309b85526fa04a6b93ab7001c",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://6f372e237785633f8cdf881f28e4f92b7d3cc525a2eafbf3188f2af0ef8c0dd6",
-				"dweb:/ipfs/QmZeL9GZ2cVBKf5QuxwmtU8YzPVhhPNgtAVqzubZHJ7DJh"
+				"bzz-raw://5cc4e1608692bf4273871d29d2a43364e4572c127c19d300d6687bfeaa79c8ff",
+				"dweb:/ipfs/QmPcybeDVKCLdGgAqUHX2BRh7eVkNYM7eEL47XePmGKM5c"
 			]
 		},
 		"Oracle.sol": {
-			"keccak256": "0xf374571ac4570845e18b9199f2db56a74c9196b40ef861064552c983a435d341",
+			"keccak256": "0x772651dd00497e537328c617646b0df70e686b5b308983f5122d78ccd3df81b4",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://b4e2904053698808be0de037e4a91b0ed5680edc112c49f6b4c6e985f8dce24d",
-				"dweb:/ipfs/QmeBKbanDKpZzA9WjKc4QFL2r3hwqVMzdh9JeEUmw1SCPE"
+				"bzz-raw://bbfd70b3c88f39815736318eea36df6fa77ff070645bafe12cd3118aaf49bd02",
+				"dweb:/ipfs/QmZ9rVU3tJAcYoWDfFFm16rnh38WLomiBhmua8dv5yzQb5"
 			]
 		},
 		"extensions/Vault/IVault.sol": {
@@ -497,11 +473,11 @@
 			]
 		},
 		"extensions/Vault/IVaultFactory.sol": {
-			"keccak256": "0xfb9782fa3cb4db59b97ce8b3969f2eb9bc584669ce85e4788facbd9332fa9b1a",
+			"keccak256": "0x0e37ad7a9f9be64e08f6e94315b0c706713551b21b4dc30cd05e4c4a288de83e",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://59534202fddc941f7cec45c9382df742042cba38b2d183de756cd0d71031ba75",
-				"dweb:/ipfs/QmbqFGgbcngeh8bHdE53JresoAprqPPGtgdPG6n5qA2YZ1"
+				"bzz-raw://da8adf7a1acbaeec2f0d437f9c137cde38bef95aefe91dd954211945ec080fe0",
+				"dweb:/ipfs/QmTBAuuTYfwWDocsMqxPxtq5UpqPsuEGFQuPZVzE2cgAH3"
 			]
 		},
 		"extensions/Vault/Vault.sol": {
@@ -513,11 +489,11 @@
 			]
 		},
 		"extensions/Vault/VaultFactory.sol": {
-			"keccak256": "0xfe04c94e54430236d801d200f53d8fa769f0140e0c6b8b2492394247ccb5bb51",
+			"keccak256": "0x56143e8df0329bd7c3ccb2dfca722bec65c5a2eb292b58e9bcc78d73b5ffb9dc",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://bbb123af98daa04d33e92c049ed5027c179363d11d1b744eb046c3bb96cede8a",
-				"dweb:/ipfs/QmesKLpJEsXRKvEzChcAQDsqNFQn5f7ZXBpkor2fpSoCq2"
+				"bzz-raw://4fce509bf912963e24354ed17035bd047df25b71315fd05e715bc838be328cff",
+				"dweb:/ipfs/QmT6q3ywUb1RjkJ7uNtwvpKG4jcu1dT8sotK7wKZVoVLff"
 			]
 		}
 	},

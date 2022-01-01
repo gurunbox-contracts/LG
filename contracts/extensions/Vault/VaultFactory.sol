@@ -41,7 +41,7 @@ contract VaultFactory is Oracle, IVaultFactory {
         nextVaultId++;
         
 
-        emit VaultCreated(_owner, _receiver, _vault);
+        emit VaultCreated(_owner, _receiver, _vault, nextVaultId - 1);
     }
 
     function createVault(address _owner, address receiver) external override onlyOwner returns (address vault) {
