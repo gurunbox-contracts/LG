@@ -104,7 +104,7 @@ contract Vault is IVault, Ownable{
         emit TransferETH(address(this), to, _value);
     }
 
-    function craim20(address token, address to) external override {
+    function claim20(address token, address to) external override {
         require(receiver == msg.sender, "Vault: Not receiver");
         require(condition(), "Vault: Condition not met");
         require(block.timestamp >= requestedTime + gracePeriod, "Vault: Grace period not over");

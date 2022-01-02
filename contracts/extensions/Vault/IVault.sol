@@ -26,6 +26,6 @@ interface IVault {
     function changeReceiver(address _receiver) external;
     function request() external;
     function claimETH(address payable to) external;
-    function craim20(address token, address to) external;
+    function claim20(address token, address to) external;
     function claim721(address token, address to, uint tokenId) external;
 }
