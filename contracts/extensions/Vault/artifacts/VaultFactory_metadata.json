@@ -452,11 +452,11 @@
 			]
 		},
 		"Oracle.sol": {
-			"keccak256": "0x772651dd00497e537328c617646b0df70e686b5b308983f5122d78ccd3df81b4",
+			"keccak256": "0xec7061dbe85b3192816a78e139d6ad7321ea554b2e5a464553227c49d9ee064e",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://bbfd70b3c88f39815736318eea36df6fa77ff070645bafe12cd3118aaf49bd02",
-				"dweb:/ipfs/QmZ9rVU3tJAcYoWDfFFm16rnh38WLomiBhmua8dv5yzQb5"
+				"bzz-raw://299f3b5fe6d292b3d721212fe324351a8655a802552ca6e11296b3e38fa1d408",
+				"dweb:/ipfs/QmaKkMW8QfzyY7vGppRzqYHy1VsZkTwcVD13ar9kQ5Cy3U"
 			]
 		},
 		"extensions/Vault/IVault.sol": {

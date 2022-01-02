@@ -36,8 +36,9 @@ contract Oracle is IOracle, Ownable {
     }
 
     function setTrustees(address[] memory _trustees, uint _numerator) external override onlyOwner {
-        require(_numerator <= trustees.length, "Vault: Numerator must be less than or equal to denominator");
         trustees = _trustees;
+
+        require(_numerator <= trustees.length, "Vault: Numerator must be less than or equal to denominator");
         numerator = _numerator;
         denominator = trustees.length;
 
@@ -47,6 +48,7 @@ contract Oracle is IOracle, Ownable {
     }
 
     function judge(bool TF, uint trusteeId) external override returns (uint) {
+        require(trusteeId < trustees.length, "Vault: Trustee id must be less than number of trustees");
         require(trustees[trusteeId] == msg.sender, "Vault: Not a trustee.");
 
         if (TF) {
