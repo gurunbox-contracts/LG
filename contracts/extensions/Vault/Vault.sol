@@ -12,41 +12,45 @@ import {IVaultFactory} from './IVaultFactory.sol';
 
 contract Vault is IVault, Ownable{
     address public override vaultFactory;
-    address public override receiver; 
+    address public override receiver;
+    uint public override vaultId; 
     uint public override requestedTime;
     uint public override gracePeriod;
+    address public override oracle;
 
     constructor() {
         vaultFactory = msg.sender;
     }
 
     function condition() public view returns (bool) {
-        return IVaultFactory(vaultFactory).condition();
+        return IOracle(oracle).condition();
     }
     
     // called once by the factory at time of deployment
-    function initialize(address _owner, address _receiver) external override {
+    function initialize(address _owner, address _receiver, uint _vaultId) external override {
         require(msg.sender == vaultFactory, 'Vault: FORBIDDEN'); // sufficient check
         transferOwnership(_owner);
         receiver = _receiver;
+        oracle = msg.sender;
+        vaultId = _vaultId;
 
         emit TransferReceiver(address(0), receiver);
     }
 
     // It is not neccessarily important to use deposit function
-    function depositETH() public payable onlyOwner {
+    function depositETH() external override payable onlyOwner {
         emit TransferETH(msg.sender, address(this), msg.value);
     }
 
-    function deposit20(address token, uint amount) public onlyOwner {
+    function deposit20(address token, uint amount) external override onlyOwner {
         IERC20(token).transferFrom(msg.sender, address(this), amount);
     }
 
-    function deposit721(address token, uint tokenId) public onlyOwner {
+    function deposit721(address token, uint tokenId) external override onlyOwner {
         IERC721(token).transferFrom(msg.sender, address(this), tokenId);
     }
 
-    function withdrawETH(address payable to, uint _value) public onlyOwner {
+    function withdrawETH(address payable to, uint _value) external override onlyOwner {
         require(address(this).balance >= _value, "Vault: Insufficient value");
 
         // To can receive Ether since the address of to is payable
@@ -56,27 +60,32 @@ contract Vault is IVault, Ownable{
         emit TransferETH(address(this), to, _value);
     }
 
-    function withdraw20(address token, address to, uint amount) public onlyOwner {
+    function withdraw20(address token, address to, uint amount) external override onlyOwner {
         IERC20(token).transfer(to, amount);
     }
 
-    function withdraw721(address token, address to, uint tokenId) public onlyOwner {
+    function withdraw721(address token, address to, uint tokenId) external override onlyOwner {
         IERC721(token).transferFrom(address(this), to, tokenId);
     }
 
-    function changeGracePeriod(uint _gracePeriod) public onlyOwner {
+    function changeOracle(address _oracle) external override onlyOwner {
+        oracle = _oracle;
+    }
+
+    function changeGracePeriod(uint _gracePeriod) external override onlyOwner {
         gracePeriod = _gracePeriod;
     }
 
-    function changeReceiver(address _receiver) external override {
-        require(receiver == msg.sender, "Vault: Not receiver");
+    function changeReceiver(address _receiver) external override onlyOwner {
+        address preReceiver = receiver;
         receiver = _receiver;
 
-        emit TransferReceiver(msg.sender, receiver);
+        emit TransferReceiver(preReceiver, receiver);
     }
 
     function request() external override {
         require(receiver == msg.sender, "Vault: Not receiver");
+        require(condition(), "Vault: Condition not met");
         requestedTime = block.timestamp;
         
         emit Requested(requestedTime);
@@ -95,7 +104,7 @@ contract Vault is IVault, Ownable{
         emit TransferETH(address(this), to, _value);
     }
 
-    function craim20(address token, address to) external override {
+    function claim20(address token, address to) external override {
         require(receiver == msg.sender, "Vault: Not receiver");
         require(condition(), "Vault: Condition not met");
         require(block.timestamp >= requestedTime + gracePeriod, "Vault: Grace period not over");
