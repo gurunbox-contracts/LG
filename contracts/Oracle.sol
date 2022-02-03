@@ -15,8 +15,8 @@ contract Oracle is IOracle, Ownable {
     uint public override numerator = 1;
     uint public override denominator = 1;
     
+    mapping(address => uint[]) private trusteeIds;
     mapping(uint => bool) public override trusteeOpinion;
-    mapping(address => uint) public override trusteeIds;
 
     constructor(string memory name_, address _owner) {
         _name = name_;
@@ -31,27 +31,24 @@ contract Oracle is IOracle, Ownable {
         return _name;
     }
 
-    function setTrustees(address[] memory _trustees, uint _numerator, uint _denominator) public onlyOwner {
-        require(_numerator <= _denominator, "Vault: Numerator must be less than or equal to denominator");
+    function getTrusteeIds(address _trustee) public view override returns (uint[] memory) {
+        return trusteeIds[_trustee];
+    }
+
+    function setTrustees(address[] memory _trustees, uint _numerator) external override onlyOwner {
         trustees = _trustees;
+
+        require(_numerator <= trustees.length, "Vault: Numerator must be less than or equal to denominator");
         numerator = _numerator;
-        denominator = _denominator;
+        denominator = trustees.length;
 
         for (uint i = 0; i < trustees.length; i++) {
-            trusteeIds[trustees[i]] = i;
-
-            emit TransferTrustee(address(0), trustees[i], i);
+            trusteeIds[trustees[i]].push(i);
         }
     }
 
-    function changeTrustee(address _trustee, uint trusteeId) external override {
-        require(trustees[trusteeId] == msg.sender, "Vault: Not a trustee.");
-        trustees[trusteeId] = _trustee;
-
-        emit TransferTrustee(msg.sender, _trustee, trusteeId);
-    }
-
     function judge(bool TF, uint trusteeId) external override returns (uint) {
+        require(trusteeId < trustees.length, "Vault: Trustee id must be less than number of trustees");
         require(trustees[trusteeId] == msg.sender, "Vault: Not a trustee.");
 
         if (TF) {
