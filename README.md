@@ -1,12 +1,48 @@
-# will
+# New Project
 
-try to create the way of heritage succession on smart contract
+> ✨ Example useDApp application.
 
-ETH、AVAX、ERC20トークンやERC721NFTなどのデジタル資産を保有する人がますます多くなっている現在において、デジタル資産をどのように相続させるか、遺言によって後世に承継させるかという問題について関心が高まっています。
+# Useage
 
-デジタル資産を承継させる方法には秘密鍵の承継など様々な手段が考えられますが、このプロジェクトはスマートコントラクトによってデジタル資産を承継させることを目的にします。
+```
+yarn
+yarn start
+```
+or with `npm`
+```
+npm install
+npm start
+```
+Runs the app in the development mode.
+Open http://localhost:8080 to view it in the browser.
 
-ブロックチェーン技術において、リアルな世界の情報、特に本件であれば人が死亡したという情報を正確にブロックチェーンに書き込むことは多くの困難を伴います。この困難を解決するために、様々な方法が考えられますが、このプロジェクトは、遺言者が指定した者のうち数人が死亡情報を入力した場合に、その人が死亡したとみなしてデジタル財産を承継させます。
+The page will reload if you make edits.
+You will also see any lint errors in the console.
 
-これは、財産を保有する人がそれぞれ自前のオラクルを用意するということです。このプロジェクトは遺言のために生み出されたものですが、コントラクトを作成した者が、人の死亡情報以外の情報を多数決（あるいは少数決、全会一致など）によって決めたい場合に活用することができます。
+## Builds
 
+```
+yarn run build
+```
+or 
+```
+npm run build
+```
+
+Builds a static copy of your site to the `build/` folder.
+Your app is ready to be deployed!
+
+**For the best production performance:** Add a build bundler plugin like "@snowpack/plugin-webpack" to your `snowpack.config.js` config file.
+
+## Testing
+
+```
+yarn test
+```
+or
+```
+npm test
+```
+
+Launches the application test runner.
+Run with the `--watch` flag (`npm test -- --watch`) to run in interactive watch mode.
