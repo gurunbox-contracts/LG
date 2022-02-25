@@ -1,48 +1,15 @@
-# New Project
+# Basic Sample Hardhat Project
 
-> ✨ Example useDApp application.
+This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts.
 
-# Useage
+Try running some of the following tasks:
 
+```shell
+npx hardhat accounts
+npx hardhat compile
+npx hardhat clean
+npx hardhat test
+npx hardhat node
+node scripts/sample-script.js
+npx hardhat help
 ```
-yarn
-yarn start
-```
-or with `npm`
-```
-npm install
-npm start
-```
-Runs the app in the development mode.
-Open http://localhost:8080 to view it in the browser.
-
-The page will reload if you make edits.
-You will also see any lint errors in the console.
-
-## Builds
-
-```
-yarn run build
-```
-or 
-```
-npm run build
-```
-
-Builds a static copy of your site to the `build/` folder.
-Your app is ready to be deployed!
-
-**For the best production performance:** Add a build bundler plugin like "@snowpack/plugin-webpack" to your `snowpack.config.js` config file.
-
-## Testing
-
-```
-yarn test
-```
-or
-```
-npm test
-```
-
-Launches the application test runner.
-Run with the `--watch` flag (`npm test -- --watch`) to run in interactive watch mode.
