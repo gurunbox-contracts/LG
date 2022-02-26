@@ -4,16 +4,15 @@ pragma solidity ^0.8.0;
 
 import {IOracle} from "./IOracle.sol";
 import {Ownable} from './@OpenZeppelin/contracts/access/Ownable.sol';
-import {Create2} from "./@OpenZeppelin/contracts/utils/Create2.sol";
 import {Vault} from "./extensions/Vault/Vault.sol";
 
 contract Oracle is IOracle, Ownable {
     string private _name;
 
-    uint public override conditionCounter;
     address[] public override trustees;
     uint public override numerator = 1;
     uint public override denominator = 1;
+    uint public override conditionCounter;
     
     mapping(address => uint[]) private trusteeIds;
     mapping(uint => bool) public override trusteeOpinion;
