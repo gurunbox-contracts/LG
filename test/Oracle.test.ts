@@ -2,6 +2,12 @@ import { expect } from 'chai';
 import { ethers } from "hardhat";
 import { Contract, ContractFactory } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+const {
+    BN,           // Big Number support
+    constants,    // Common constants, like the zero address and largest integers
+    expectEvent,  // Assertions for emitted events
+    expectRevert, // Assertions for transactions that should fail
+  } = require('@openzeppelin/test-helpers');
 
 describe("Oracle deployed and set 3 of 5", function() {
     let Oracle: ContractFactory;
@@ -51,6 +57,8 @@ describe("Oracle deployed and set 3 of 5", function() {
     })
 
     it("return trusteeIds of each trustee address", async function() {
-        // expect(await oracle.getTrusteeIds(trustee0.address)).to.equal(0);
+        let num = new BN([2,4]);
+        //@ts-ignore
+        expect(new BN(await oracle.getTrusteeIds(trustee2.address))).to.be.bignumber.equal(num);
     })
 })
