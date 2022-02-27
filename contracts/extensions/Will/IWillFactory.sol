@@ -9,7 +9,7 @@ interface IWillFactory is IOracle {
 
     function getWills(uint256 willId) external view returns (address will);
     function willNumber() external view returns (uint256);
-    // function getReceivers(uint256 willId) external view returns (address);
+    function getReceivers(uint256 willId) external view returns (address);
 
     function createWill(address receiver) external returns (address will);
 }

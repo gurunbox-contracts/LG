@@ -14,11 +14,10 @@ contract Vault is IVault, Ownable{
     address public override vaultFactory;
     address public override receiver;
     address public override oracle;
-    uint public override vaultId; 
-    uint public override requestedTime;
-    uint public override gracePeriod;
+    uint256 public override vaultId; 
+    uint256 public override requestedTime;
+    uint256 public override gracePeriod;
     
-
     constructor() {
         vaultFactory = msg.sender;
     }
@@ -28,7 +27,7 @@ contract Vault is IVault, Ownable{
     }
     
     // called once by the factory at time of deployment
-    function initialize(address _owner, address _receiver, uint _vaultId) external override {
+    function initialize(address _owner, address _receiver, uint256 _vaultId) external override {
         require(msg.sender == vaultFactory, 'Vault: FORBIDDEN'); // sufficient check
         transferOwnership(_owner);
         receiver = _receiver;
@@ -43,15 +42,15 @@ contract Vault is IVault, Ownable{
         emit TransferETH(msg.sender, address(this), msg.value);
     }
 
-    function deposit20(address token, uint amount) external override onlyOwner {
+    function deposit20(address token, uint256 amount) external override onlyOwner {
         IERC20(token).transferFrom(msg.sender, address(this), amount);
     }
 
-    function deposit721(address token, uint tokenId) external override onlyOwner {
+    function deposit721(address token, uint256 tokenId) external override onlyOwner {
         IERC721(token).transferFrom(msg.sender, address(this), tokenId);
     }
 
-    function withdrawETH(address payable to, uint _value) external override onlyOwner {
+    function withdrawETH(address payable to, uint256 _value) external override onlyOwner {
         require(address(this).balance >= _value, "Vault: Insufficient value");
 
         // To can receive Ether since the address of to is payable
@@ -61,11 +60,11 @@ contract Vault is IVault, Ownable{
         emit TransferETH(address(this), to, _value);
     }
 
-    function withdraw20(address token, address to, uint amount) external override onlyOwner {
+    function withdraw20(address token, address to, uint256 amount) external override onlyOwner {
         IERC20(token).transfer(to, amount);
     }
 
-    function withdraw721(address token, address to, uint tokenId) external override onlyOwner {
+    function withdraw721(address token, address to, uint256 tokenId) external override onlyOwner {
         IERC721(token).transferFrom(address(this), to, tokenId);
     }
 
@@ -73,7 +72,7 @@ contract Vault is IVault, Ownable{
         oracle = _oracle;
     }
 
-    function changeGracePeriod(uint _gracePeriod) external override onlyOwner {
+    function changeGracePeriod(uint256 _gracePeriod) external override onlyOwner {
         gracePeriod = _gracePeriod;
     }
 
@@ -98,7 +97,7 @@ contract Vault is IVault, Ownable{
         require(block.timestamp >= requestedTime + gracePeriod, "Vault: Grace period not over");
 
         // To receive Ether since the address of To is payable
-        uint _value = address(this).balance;
+        uint256 _value = address(this).balance;
         (bool success, ) = to.call{value: _value}("");
         require(success, "Failed to send Ether");
 
@@ -110,11 +109,11 @@ contract Vault is IVault, Ownable{
         require(condition(), "Vault: Condition not met");
         require(block.timestamp >= requestedTime + gracePeriod, "Vault: Grace period not over");
 
-        uint _value = IERC20(token).balanceOf(address(this));
+        uint256 _value = IERC20(token).balanceOf(address(this));
         IERC20(token).transfer(to, _value);
     }
 
-    function claim721(address token, address to, uint tokenId) external override {
+    function claim721(address token, address to, uint256 tokenId) external override {
         require(receiver == msg.sender, "Vault: Not receiver");
         require(condition(), "Vault: Condition not met");
         require(block.timestamp >= requestedTime + gracePeriod, "Vault: Grace period not over");

@@ -23,9 +23,9 @@ contract WillFactory is Oracle, IWillFactory {
         return nextWillId;
     }
 
-    // function getReceivers(uint256 willId) public view override returns (address) {
-    //     return IWill(getWills[willId]).receiver();
-    // }
+    function getReceivers(uint256 willId) public view override returns (address) {
+        return IWill(getWills[willId]).receiver();
+    }
 
     function createWill(address receiver) external override onlyOwner returns (address will) {
         require(receiver != address(0), 'WillFactory: RECEIVER_ZERO_ADDRESS');
@@ -40,8 +40,6 @@ contract WillFactory is Oracle, IWillFactory {
         nextWillId++;
         
         emit WillCreated(owner(), receiver, will, nextWillId - 1);
-    } 
-
-    
+    }
 
 }
