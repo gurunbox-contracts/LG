@@ -4,7 +4,6 @@ pragma solidity ^0.8.0;
 
 import {IOracle} from "./IOracle.sol";
 import {Ownable} from './@OpenZeppelin/contracts/access/Ownable.sol';
-import {Vault} from "./extensions/Vault/Vault.sol";
 
 contract Oracle is IOracle, Ownable {
     string private _name;
@@ -37,7 +36,7 @@ contract Oracle is IOracle, Ownable {
     function setTrustees(address[] memory _trustees, uint _numerator) external override onlyOwner {
         trustees = _trustees;
 
-        require(_numerator <= trustees.length, "Vault: Numerator must be less than or equal to denominator");
+        require(_numerator <= trustees.length, "Oracle: Numerator must be less than or equal to denominator");
         numerator = _numerator;
         denominator = trustees.length;
 
@@ -46,30 +45,13 @@ contract Oracle is IOracle, Ownable {
         }
     }
 
-    function judge(bool TF, uint trusteeId) external override returns (uint) {
-        require(trusteeId < trustees.length, "Vault: Trustee id must be less than number of trustees");
-        require(trustees[trusteeId] == msg.sender, "Vault: Not a trustee.");
+    function judge(bool TF, uint trusteeId) external override {
+        require(trustees[trusteeId] == msg.sender, "Oracle: Not a trustee.");
+        require(trusteeOpinion[trusteeId] != TF, "Oracle: The opinion you're trying to send has already been sent.");
 
-        if (TF) {
-            if(trusteeOpinion[trusteeId]) {
-
-            } else {
-                conditionCounter++;
-                trusteeOpinion[trusteeId] = true;
-
-                emit Judged(trustees[trusteeId], true);
-            }   
-        } else {
-            if(trusteeOpinion[trusteeId]) {
-                conditionCounter--;
-                trusteeOpinion[trusteeId] = false;
-
-                emit Judged(trustees[trusteeId], false);
-            } else {
-
-            }
-        }
-        return conditionCounter;
+        TF ? conditionCounter++ : conditionCounter--;
+        trusteeOpinion[trusteeId] = TF;
+        
+        emit Judged(trustees[trusteeId], TF);
     }
-
 }

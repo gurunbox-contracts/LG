@@ -43,7 +43,7 @@ describe("Oracle deployed and set 3 of 5", function() {
         expect(await oracle.owner()).to.equal(owner.address);
     });
 
-    it("return 6 trustees, 3 numerator and false condition when initialized", async function() {
+    it("return 5 trustees, 3 numerator", async function() {
         expect(await oracle.trustees(0)).to.equal(trustee0.address);
         expect(await oracle.trustees(1)).to.equal(trustee1.address);
         expect(await oracle.trustees(2)).to.equal(trustee2.address);
@@ -52,13 +52,34 @@ describe("Oracle deployed and set 3 of 5", function() {
 
         expect(await oracle.numerator()).to.equal(3);
         expect(await oracle.denominator()).to.equal(5);
+    })
+
+    // Bignumberの使い方についてまだよくわかってないことが多いのでリサーチすること
+    it("return trusteeIds of each trustee address", async function() {
+        let id_address0 = new BN([0]);
+        let id_address1 = new BN([1]);
+        let id_address2 = new BN([2,4]);
+        let id_address3 = new BN([3]);
+        //@ts-ignore
+        expect(new BN(await oracle.getTrusteeIds(trustee0.address))).to.be.bignumber.equal(id_address0);
+        //@ts-ignore
+        expect(new BN(await oracle.getTrusteeIds(trustee1.address))).to.be.bignumber.equal(id_address1);
+        //@ts-ignore
+        expect(new BN(await oracle.getTrusteeIds(trustee2.address))).to.be.bignumber.equal(id_address2);
+        //@ts-ignore
+        expect(new BN(await oracle.getTrusteeIds(trustee3.address))).to.be.bignumber.equal(id_address3);
+    })
+
+    it("Should return false trustee opinions and false condition when initialized", async function() {
+        expect(await oracle.trusteeOpinion(0)).to.equal(false);
+        expect(await oracle.trusteeOpinion(1)).to.equal(false);
+        expect(await oracle.trusteeOpinion(2)).to.equal(false);
+        expect(await oracle.trusteeOpinion(3)).to.equal(false);
+        expect(await oracle.trusteeOpinion(4)).to.equal(false);
+
         expect(await oracle.conditionCounter()).to.equal(0);
         expect(await oracle.condition()).to.equal(false);
     })
 
-    it("return trusteeIds of each trustee address", async function() {
-        let num = new BN([2,4]);
-        //@ts-ignore
-        expect(new BN(await oracle.getTrusteeIds(trustee2.address))).to.be.bignumber.equal(num);
-    })
+    
 })

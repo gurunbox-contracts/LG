@@ -16,5 +16,5 @@ interface IOracle {
     function trusteeOpinion(uint trusteeId) external view returns (bool);
 
     function setTrustees(address[] memory _trustees, uint _numerator) external;
-    function judge(bool TF, uint trusteeId) external returns (uint);   
+    function judge(bool TF, uint trusteeId) external;   
 }
