@@ -85,5 +85,41 @@ describe("Oracle deployed and set 3 of 5", function() {
         expect(await oracle.connect(trustee0).judge(true, 0))
             .to.emit(oracle, "Judged")
             .withArgs(trustee0.address, true);
+        expect(await oracle.conditionCounter()).to.equal(1);
+        expect(await oracle.condition()).to.equal(false);
+
+        await oracle.connect(trustee1).judge(true, 1);
+        expect(await oracle.conditionCounter()).to.equal(2);
+        expect(await oracle.condition()).to.equal(false);
+
+        await oracle.connect(trustee2).judge(true, 2);
+        expect(await oracle.conditionCounter()).to.equal(3);
+        expect(await oracle.condition()).to.equal(true);
+
+        await oracle.connect(trustee3).judge(true, 3);
+        expect(await oracle.conditionCounter()).to.equal(4);
+        expect(await oracle.condition()).to.equal(true);
+
+        await oracle.connect(trustee2).judge(true, 4);
+        expect(await oracle.conditionCounter()).to.equal(5);
+        expect(await oracle.condition()).to.equal(true);
+
+        await oracle.connect(trustee2).judge(false, 2);
+        expect(await oracle.conditionCounter()).to.equal(4);
+        expect(await oracle.condition()).to.equal(true);
+
+        await oracle.connect(trustee2).judge(false, 4);
+        expect(await oracle.conditionCounter()).to.equal(3);
+        expect(await oracle.condition()).to.equal(true);
+
+        await oracle.connect(trustee0).judge(false, 0);
+        expect(await oracle.conditionCounter()).to.equal(2);
+        expect(await oracle.condition()).to.equal(false);
+    })
+
+    it("Should revert not match address and trusteeId", async function() {
+        await expect(oracle.connect(alice).judge(true,0))
+            .to.be.revertedWith("Oracle: Not a trustee");
+
     })
 })
