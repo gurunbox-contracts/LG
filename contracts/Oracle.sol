@@ -9,12 +9,12 @@ contract Oracle is IOracle, Ownable {
     string private _name;
 
     address[] public override trustees;
-    uint public override numerator = 1;
-    uint public override denominator = 1;
-    uint public override conditionCounter;
+    uint256 public override numerator = 1;
+    uint256 public override denominator = 1;
+    uint256 public override conditionCounter;
     
-    mapping(address => uint[]) private trusteeIds;
-    mapping(uint => bool) public override trusteeOpinion;
+    mapping(address => uint256[]) private trusteeIds;
+    mapping(uint256 => bool) public override trusteeOpinion;
 
     constructor(string memory name_, address _owner) {
         _name = name_;
@@ -33,19 +33,19 @@ contract Oracle is IOracle, Ownable {
         return trusteeIds[_trustee];
     }
 
-    function setTrustees(address[] memory _trustees, uint _numerator) external override onlyOwner {
+    function setTrustees(address[] memory _trustees, uint256 _numerator) external override onlyOwner {
         trustees = _trustees;
 
         require(_numerator <= trustees.length, "Oracle: Numerator must be less than or equal to denominator");
         numerator = _numerator;
         denominator = trustees.length;
 
-        for (uint i = 0; i < trustees.length; i++) {
+        for (uint256 i = 0; i < trustees.length; i++) {
             trusteeIds[trustees[i]].push(i);
         }
     }
 
-    function judge(bool TF, uint trusteeId) external override {
+    function judge(bool TF, uint256 trusteeId) external override {
         require(trustees[trusteeId] == msg.sender, "Oracle: Not a trustee");
         require(trusteeOpinion[trusteeId] != TF, "Oracle: The opinion you're trying to send has already been sent");
 

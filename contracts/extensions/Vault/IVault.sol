@@ -9,10 +9,10 @@ interface IVault {
 
     function vaultFactory() external view returns (address);
     function receiver() external view returns (address);
+    function oracle() external view returns (address);
     function vaultId() external view returns (uint);
     function requestedTime() external view returns (uint);
     function gracePeriod() external view returns (uint);
-    function oracle() external view returns (address);
 
     function initialize(address _owner, address _receiver, uint _vaultId) external;
     function depositETH() external payable;

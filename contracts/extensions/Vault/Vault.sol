@@ -13,10 +13,11 @@ import {IVaultFactory} from './IVaultFactory.sol';
 contract Vault is IVault, Ownable{
     address public override vaultFactory;
     address public override receiver;
+    address public override oracle;
     uint public override vaultId; 
     uint public override requestedTime;
     uint public override gracePeriod;
-    address public override oracle;
+    
 
     constructor() {
         vaultFactory = msg.sender;
