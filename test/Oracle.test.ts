@@ -81,5 +81,9 @@ describe("Oracle deployed and set 3 of 5", function() {
         expect(await oracle.condition()).to.equal(false);
     })
 
-    
+    it("Should return correct condition according to trustees Judge", async function() {
+        expect(await oracle.connect(trustee0).judge(true, 0))
+            .to.emit(oracle, "Judged")
+            .withArgs(trustee0.address, true);
+    })
 })
