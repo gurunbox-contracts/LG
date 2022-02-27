@@ -47,7 +47,7 @@ contract Oracle is IOracle, Ownable {
 
     function judge(bool TF, uint trusteeId) external override {
         require(trustees[trusteeId] == msg.sender, "Oracle: Not a trustee");
-        require(trusteeOpinion[trusteeId] != TF, "Oracle: The opinion you're trying to send has already been sent.");
+        require(trusteeOpinion[trusteeId] != TF, "Oracle: The opinion you're trying to send has already been sent");
 
         TF ? conditionCounter++ : conditionCounter--;
         trusteeOpinion[trusteeId] = TF;

@@ -82,7 +82,7 @@ describe("Oracle deployed and set 3 of 5", function() {
     })
 
     it("Should return correct condition according to trustees Judge", async function() {
-        expect(await oracle.connect(trustee0).judge(true, 0))
+        await expect(oracle.connect(trustee0).judge(true, 0))
             .to.emit(oracle, "Judged")
             .withArgs(trustee0.address, true);
         expect(await oracle.conditionCounter()).to.equal(1);
@@ -118,8 +118,35 @@ describe("Oracle deployed and set 3 of 5", function() {
     })
 
     it("Should revert not match address and trusteeId", async function() {
-        await expect(oracle.connect(alice).judge(true,0))
+        await expect(oracle.connect(alice).judge(true, 0))
             .to.be.revertedWith("Oracle: Not a trustee");
+        
+        await expect(oracle.connect(trustee1).judge(true, 0))
+            .to.be.revertedWith("Oracle: Not a trustee");
+        
+        await expect(oracle.connect(owner).judge(true, 0))
+            .to.be.revertedWith("Oracle: Not a trustee");
+    })
 
+    it("Should revert same opinion", async function() {
+        await expect(oracle.connect(trustee0).judge(false, 0))
+            .to.be.revertedWith("Oracle: The opinion you're trying to send has already been sent");
+        
+        await expect(oracle.connect(trustee0).judge(true, 0))
+            .to.emit(oracle, "Judged")
+            .withArgs(trustee0.address, true);
+        
+        await expect(oracle.connect(trustee0).judge(true, 0))
+            .to.be.revertedWith("Oracle: The opinion you're trying to send has already been sent");
+    })
+
+    it("Should revert set trustees from other than owner", async function() {
+        await expect(oracle.connect(alice).setTrustees(trustees, 3))
+            .to.be.revertedWith("Ownable: caller is not the owner");
+    })
+
+    it("Should revert numerator larger than number of trustees", async function() {
+        await expect(oracle.connect(owner).setTrustees(trustees, 6))
+            .to.be.revertedWith("Oracle: Numerator must be less than or equal to denominator");
     })
 })
