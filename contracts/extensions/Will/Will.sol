@@ -36,7 +36,7 @@ contract Will is IWill, Ownable {
     }
 
     // It is not neccessarily important to use deposit function
-    function depositETH() external override payable onlyOwner {
+    function depositETH() external override payable {
         emit TransferETH(msg.sender, address(this), msg.value);
     }
 
