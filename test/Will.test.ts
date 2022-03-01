@@ -64,6 +64,22 @@ const [owner, wallet] = provider.getWallets();
             gasLimit:100000 
         });
         expect(await provider.getBalance(will.address)).to.equal(ethers.utils.parseEther('2'));
+    })
 
+    it('deposit ERC20', async function() {
+        const tx = await owner.populateTransaction({
+            from: owner.address,
+            to: will.address,
+            value: ethers.utils.parseEther('1')
+        })
+        const signedTx = await owner.signTransaction(tx);
+
+        await wallet.sendTransaction({
+            to: will.address,
+            value: ethers.utils.parseEther('1')
+        })
+        await provider.sendTransaction(signedTx);
+
+        expect(await provider.getBalance(will.address)).to.equal(ethers.utils.parseEther('2'));
     })
   })
