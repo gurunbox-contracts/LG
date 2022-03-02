@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { ethers } from "hardhat";
 import { Contract, ContractFactory } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { solidity, MockProvider, createFixtureLoader } from 'ethereum-waffle'
 const {
     BN,           // Big Number support
     constants,    // Common constants, like the zero address and largest integers
@@ -9,10 +10,13 @@ const {
     expectRevert, // Assertions for transactions that should fail
   } = require('@openzeppelin/test-helpers');
 
+import { willFactoryFixture } from './shared/fixtures';
 import { shouldBehaveLikeOracle } from "./Oracle.behavior";
+import { shouldBehaveLikeWill } from "./Will.behavior";
 
   describe("WillFactory", function() {
-    let WillFactory: ContractFactory;
+    let name = "Test";
+
     let willFactory: Contract;
     let owner: SignerWithAddress;
     let receiver0: SignerWithAddress;
@@ -42,16 +46,15 @@ import { shouldBehaveLikeOracle } from "./Oracle.behavior";
             trustee3.address,
             trustee4.address,
         ];   
-        WillFactory = await ethers.getContractFactory("WillFactory");
-        willFactory = await WillFactory.deploy("Test", owner.address);
-        await willFactory.deployed();
+        const fixture = await willFactoryFixture(name, owner);
+        willFactory = fixture.willFactory;
     })
 
     it('create will', async function() {
-        await willFactory.createWill(receiver0.address);
-        await willFactory.createWill(receiver1.address);
-        await willFactory.createWill(receiver2.address);
-        await willFactory.createWill(receiver3.address);
+        await willFactory.connect(owner).createWill(receiver0.address);
+        await willFactory.connect(owner).createWill(receiver1.address);
+        await willFactory.connect(owner).createWill(receiver2.address);
+        await willFactory.connect(owner).createWill(receiver3.address);
 
         expect(await willFactory.getReceivers(0)).to.equal(receiver0.address);
         expect(await willFactory.getReceivers(1)).to.equal(receiver1.address);
@@ -59,6 +62,16 @@ import { shouldBehaveLikeOracle } from "./Oracle.behavior";
         expect(await willFactory.getReceivers(3)).to.equal(receiver3.address);
 
         expect(await willFactory.willNumber()).to.equal(4);
+    })
+
+    it('should revert create will from other than owner', async function() {
+        await expect(willFactory.connect(alice).createWill(receiver0.address))
+            .to.be.revertedWith('Ownable: caller is not the owner');
+    })
+
+    it('should revert create will from address (0)', async function() {
+        await expect(willFactory.connect(owner).createWill(constants.ZERO_ADDRESS))
+            .to.be.revertedWith('WillFactory: RECEIVER_ZERO_ADDRESS');
     })
 
     it('shouldBehaveLikeOracle', () => {
@@ -71,7 +84,6 @@ import { shouldBehaveLikeOracle } from "./Oracle.behavior";
             trustee2,
             trustee3,
             trustees
-            
         )
     })
   })

@@ -1,8 +1,6 @@
 import { expect } from 'chai';
-import { ethers } from "hardhat";
 import { Contract, ContractFactory } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { MockProvider } from 'ethereum-waffle';
 const {
     BN,           // Big Number support
     constants,    // Common constants, like the zero address and largest integers
@@ -131,8 +129,4 @@ export function shouldBehaveLikeOracle(
         await expect(oracle.connect(owner).setTrustees(trustees, 6))
             .to.be.revertedWith("Oracle: Numerator must be less than or equal to denominator");
     })
-}
-
-module.exports = {
-    shouldBehaveLikeOracle,
 }
