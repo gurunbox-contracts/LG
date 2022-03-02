@@ -70,11 +70,12 @@ const [owner, wallet] = provider.getWallets();
         const tx = await owner.populateTransaction({
             from: owner.address,
             to: will.address,
-            value: ethers.utils.parseEther('1')
+            value: ethers.utils.parseEther('1'),
+            nonce: 3,
         })
         const signedTx = await owner.signTransaction(tx);
 
-        await wallet.sendTransaction({
+        await owner.sendTransaction({
             to: will.address,
             value: ethers.utils.parseEther('1')
         })
