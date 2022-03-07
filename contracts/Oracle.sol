@@ -33,7 +33,7 @@ contract Oracle is IOracle, Ownable {
         return trusteeIds[_trustee];
     }
 
-    function setTrustees(address[] memory _trustees, uint256 _numerator) external override onlyOwner {
+    function setTrustees(address[] memory _trustees, uint256 _numerator) external virtual override onlyOwner {
         trustees = _trustees;
 
         require(_numerator <= trustees.length, "Oracle: Numerator must be less than or equal to denominator");
@@ -45,7 +45,7 @@ contract Oracle is IOracle, Ownable {
         }
     }
 
-    function judge(bool TF, uint256 trusteeId) external override {
+    function judge(bool TF, uint256 trusteeId) external virtual override {
         require(trustees[trusteeId] == msg.sender, "Oracle: Not a trustee");
         require(trusteeOpinion[trusteeId] != TF, "Oracle: The opinion you're trying to send has already been sent");
 
