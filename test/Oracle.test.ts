@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ethers } from "hardhat";
-import { Contract, ContractFactory } from "ethers";
+import { Contract, ContractFactory, BigNumber } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 const {
     BN,           // Big Number support
@@ -56,18 +56,16 @@ describe("Oracle deployed and set 3 of 5", function() {
 
     // Bignumberの使い方についてまだよくわかってないことが多いのでリサーチすること
     it("return trusteeIds of each trustee address", async function() {
-        let id_address0 = new BN([0]);
-        let id_address1 = new BN([1]);
-        let id_address2 = new BN([2,4]);
-        let id_address3 = new BN([3]);
-        //@ts-ignore
-        expect(new BN(await oracle.getTrusteeIds(trustee0.address))).to.be.bignumber.equal(id_address0);
-        //@ts-ignore
-        expect(new BN(await oracle.getTrusteeIds(trustee1.address))).to.be.bignumber.equal(id_address1);
-        //@ts-ignore
-        expect(new BN(await oracle.getTrusteeIds(trustee2.address))).to.be.bignumber.equal(id_address2);
-        //@ts-ignore
-        expect(new BN(await oracle.getTrusteeIds(trustee3.address))).to.be.bignumber.equal(id_address3);
+
+        let [id_address0] = await oracle.getTrusteeIds(trustee0.address)
+        expect(id_address0).to.equal(BigNumber.from(0))
+        let [id_address1] = await oracle.getTrusteeIds(trustee1.address)
+        expect(id_address1).to.equal(BigNumber.from(1))
+        let [id_address2_0, id_address2_1] = await oracle.getTrusteeIds(trustee2.address)
+        expect(id_address2_0).to.equal(BigNumber.from(2))
+        expect(id_address2_1).to.equal(BigNumber.from(4))
+        let [id_address3] = await oracle.getTrusteeIds(trustee3.address)
+        expect(id_address3).to.equal(BigNumber.from(3))
     })
 
     it("Should return false trustee opinions and false condition when initialized", async function() {
