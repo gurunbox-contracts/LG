@@ -85,12 +85,14 @@ contract Will is IWill, Ownable {
         emit TransferETH(address(this), to, value);
     }
 
-    function claim20(address token, address to, uint256 amount) external override {
+    function claim20(address[] calldata tokens, address to, uint256 amount) external override {
         require(receiver == msg.sender, "Vault: Not receiver");
         require(condition(), "Vault: Condition not met");
         require(block.timestamp >= requestedTime + gracePeriod, "Vault:Grace period not over");
 
-        IERC20(token).transferFrom(owner(), to, amount);
+        for (uint i = 0; i < tokens.length; i++) {
+            IERC20(tokens[i]).transferFrom(owner(), to, amount);
+        }
     }
 
     function claim721(address token, address to, uint256 tokenId) external override {

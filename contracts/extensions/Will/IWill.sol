@@ -22,6 +22,6 @@ interface IWill {
     function changeReceiver(address _receiver) external;
     function request() external;
     function claimETH(address payable to, uint256 value) external;
-    function claim20(address token, address to, uint256 amount) external;
+    function claim20(address[] calldata tokens, address to, uint256 amount) external;
     function claim721(address token, address to, uint256 tokenId) external;
 }
