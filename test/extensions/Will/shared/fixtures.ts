@@ -20,9 +20,10 @@ export async function willFactoryFixture(
     owner: SignerWithAddress,
     trustees: string[],
     numerator: number,
+    receiver: string
     ): Promise<WillFactoryFixture> {
     let WillFactory = await ethers.getContractFactory("WillFactory");
-    const willFactory = await WillFactory.deploy(name, owner.address, trustees, numerator);
+    const willFactory = await WillFactory.deploy(name, owner.address, trustees, numerator, receiver);
     return { willFactory };
 }
 

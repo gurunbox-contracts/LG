@@ -17,8 +17,10 @@ contract WillFactory is Oracle, IWillFactory {
         string memory name_,
         address _owner, 
         address[] memory _trustees, 
-        uint256 _numerator
+        uint256 _numerator,
+        address receiver
         ) Oracle(name_, _owner, _trustees, _numerator) {
+            _createWill(receiver);
     }
 
     function willNumber() public view override returns (uint256) {
@@ -30,18 +32,22 @@ contract WillFactory is Oracle, IWillFactory {
     }
 
     function createWill(address receiver) external override onlyOwner returns (address will) {
-        require(receiver != address(0), 'WillFactory: RECEIVER_ZERO_ADDRESS');
+        will = _createWill(receiver);
+    }
+
+    function _createWill(address _receiver) internal returns (address _will) {
+        require(_receiver != address(0), 'WillFactory: RECEIVER_ZERO_ADDRESS');
         
         bytes memory bytecode = type(Will).creationCode;
-        bytes32 salt = keccak256(abi.encodePacked(owner(), receiver, nextWillId));
-        will = Create2.deploy(0, salt, bytecode);
+        bytes32 salt = keccak256(abi.encodePacked(owner(), _receiver, nextWillId));
+        _will = Create2.deploy(0, salt, bytecode);
 
-        IWill(will).initialize(owner(), receiver, nextWillId);
+        IWill(_will).initialize(owner(), _receiver, nextWillId);
 
-        getWills[nextWillId] = will;
+        getWills[nextWillId] = _will;
         nextWillId++;
         
-        emit WillCreated(owner(), receiver, will, nextWillId - 1);
+        emit WillCreated(owner(), _receiver, _will, nextWillId - 1);
     }
 
 }

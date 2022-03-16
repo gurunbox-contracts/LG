@@ -1,14 +1,7 @@
 import { expect } from 'chai';
 import { ethers } from "hardhat";
-import { Contract, ContractFactory } from "ethers";
+import { Contract, ContractFactory, constants } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { solidity, MockProvider, createFixtureLoader } from 'ethereum-waffle'
-const {
-    BN,           // Big Number support
-    constants,    // Common constants, like the zero address and largest integers
-    expectEvent,  // Assertions for emitted events
-    expectRevert, // Assertions for transactions that should fail
-  } = require('@openzeppelin/test-helpers');
 
 import { willFactoryFixture } from './shared/fixtures';
 import { shouldBehaveLikeOracle } from "./Oracle.behavior";
@@ -48,12 +41,11 @@ import { shouldBehaveLikeWill } from "./Will.behavior";
             trustee4.address,
         ];   
         numerator = 3;
-        const fixture = await willFactoryFixture(name, owner, trustees, numerator);
+        const fixture = await willFactoryFixture(name, owner, trustees, numerator, receiver0.address);
         willFactory = fixture.willFactory;
     })
 
     it('create will', async function() {
-        await willFactory.connect(owner).createWill(receiver0.address);
         await willFactory.connect(owner).createWill(receiver1.address);
         await willFactory.connect(owner).createWill(receiver2.address);
         await willFactory.connect(owner).createWill(receiver3.address);
@@ -72,7 +64,7 @@ import { shouldBehaveLikeWill } from "./Will.behavior";
     })
 
     it('should revert create will from address (0)', async function() {
-        await expect(willFactory.connect(owner).createWill(constants.ZERO_ADDRESS))
+        await expect(willFactory.connect(owner).createWill(constants.AddressZero))
             .to.be.revertedWith('WillFactory: RECEIVER_ZERO_ADDRESS');
     })
 
