@@ -17,10 +17,12 @@ interface WillFactoryFixture {
 
 export async function willFactoryFixture(
     name: string,
-    owner: SignerWithAddress
+    owner: SignerWithAddress,
+    trustees: string[],
+    numerator: number,
     ): Promise<WillFactoryFixture> {
     let WillFactory = await ethers.getContractFactory("WillFactory");
-    const willFactory = await WillFactory.deploy(name, owner.address);
+    const willFactory = await WillFactory.deploy(name, owner.address, trustees, numerator);
     return { willFactory };
 }
 

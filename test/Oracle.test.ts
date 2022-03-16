@@ -26,18 +26,16 @@ describe("Oracle deployed and set 3 of 5", function() {
             trustee4.address,
         ];        
         Oracle = await ethers.getContractFactory("Oracle");
-        oracle = await Oracle.deploy("Test", owner.address);
+        oracle = await Oracle.deploy("Test", owner.address, trustees, 3);
         await oracle.deployed();
-
-        await oracle.connect(owner).setTrustees(trustees, 3);
     })
 
-    it("Should return the name and owenr address", async function() {
+    it("Should return the name, owenr address", async function() {
         expect(await oracle.name()).to.equal("Test");
         expect(await oracle.owner()).to.equal(owner.address);
     });
 
-    it("return 5 trustees, 3 numerator", async function() {
+    it("Should return 5 trustees, 3 numerator", async function() {
         expect(await oracle.trustees(0)).to.equal(trustee0.address);
         expect(await oracle.trustees(1)).to.equal(trustee1.address);
         expect(await oracle.trustees(2)).to.equal(trustee2.address);
@@ -48,8 +46,7 @@ describe("Oracle deployed and set 3 of 5", function() {
         expect(await oracle.denominator()).to.equal(5);
     })
 
-    it("return trusteeIds of each trustee address", async function() {
-
+    it("Should return trusteeIds of each trustee address", async function() {
         let [id_address0] = await oracle.getTrusteeIds(trustee0.address)
         expect(id_address0).to.equal(BigNumber.from(0))
         let [id_address1] = await oracle.getTrusteeIds(trustee1.address)
@@ -108,7 +105,35 @@ describe("Oracle deployed and set 3 of 5", function() {
         expect(await oracle.condition()).to.equal(false);
     })
 
-    it("Should revert not match address and trusteeId", async function() {
+    it("Should return fulfillment time when condition counter reachs numerator", async function() {
+        expect(await oracle.fulfillmentTime()).to.equal(0);
+
+        await oracle.connect(trustee0).judge(true, 0);
+        await oracle.connect(trustee1).judge(true, 1);
+        await oracle.connect(trustee2).judge(true, 2);
+        let latestBlock = await ethers.provider.getBlock("latest");
+        expect(await oracle.fulfillmentTime()).to.equal(BigNumber.from(latestBlock.timestamp));
+
+        await oracle.connect(trustee1).judge(false, 1);
+        await oracle.connect(trustee3).judge(true, 3);
+        latestBlock = await ethers.provider.getBlock("latest");
+        expect(await oracle.fulfillmentTime()).to.equal(BigNumber.from(latestBlock.timestamp));
+    })
+
+    it("Should not match fulfillment time and block.timestamp when other than just fulfillment", async function() {
+        await oracle.connect(trustee0).judge(true, 0);
+        await oracle.connect(trustee1).judge(true, 1);
+        await oracle.connect(trustee2).judge(true, 2);
+        await oracle.connect(trustee3).judge(true, 3);
+        let latestBlock = await ethers.provider.getBlock("latest");
+        expect(await oracle.fulfillmentTime()).to.not.equal(BigNumber.from(latestBlock.timestamp));
+
+        await oracle.connect(trustee1).judge(false, 1);
+        latestBlock = await ethers.provider.getBlock("latest");
+        expect(await oracle.fulfillmentTime()).to.not.equal(BigNumber.from(latestBlock.timestamp));
+    })
+
+    it("Should not match address and trusteeId", async function() {
         await expect(oracle.connect(alice).judge(true, 0))
             .to.be.revertedWith("Oracle: Not a trustee");
         

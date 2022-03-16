@@ -30,6 +30,7 @@ import { shouldBehaveLikeWill } from "./Will.behavior";
     let trustee3: SignerWithAddress;
     let trustee4: SignerWithAddress;
     let trustees: string[];
+    let numerator: number;
 
     beforeEach(async function() {
         [
@@ -46,7 +47,8 @@ import { shouldBehaveLikeWill } from "./Will.behavior";
             trustee3.address,
             trustee4.address,
         ];   
-        const fixture = await willFactoryFixture(name, owner);
+        numerator = 3;
+        const fixture = await willFactoryFixture(name, owner, trustees, numerator);
         willFactory = fixture.willFactory;
     })
 
