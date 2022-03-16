@@ -15,8 +15,10 @@ contract WillFactory is Oracle, IWillFactory {
 
     constructor(
         string memory name_,
-        address _owner
-        ) Oracle(name_, _owner) {
+        address _owner, 
+        address[] memory _trustees, 
+        uint256 _numerator
+        ) Oracle(name_, _owner, _trustees, _numerator) {
     }
 
     function willNumber() public view override returns (uint256) {

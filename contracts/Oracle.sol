@@ -9,16 +9,29 @@ contract Oracle is IOracle, Ownable {
     string private _name;
 
     address[] public override trustees;
-    uint256 public override numerator = 1;
-    uint256 public override denominator = 1;
+    uint256 public override numerator;
+    uint256 public override denominator;
     uint256 public override conditionCounter;
+    uint256 public override fulfillmentTime;
     
     mapping(address => uint256[]) private trusteeIds;
     mapping(uint256 => bool) public override trusteeOpinion;
 
-    constructor(string memory name_, address _owner) {
+    constructor(
+        string memory name_, 
+        address _owner, 
+        address[] memory _trustees, 
+        uint256 _numerator
+        ) {
         _name = name_;
         transferOwnership(_owner);
+        trustees = _trustees;
+        numerator = _numerator;
+        denominator = _trustees.length;
+
+        for (uint256 i = 0; i < trustees.length; i++) {
+            trusteeIds[trustees[i]].push(i);
+        }
     }
 
     function condition() external view override returns (bool) {
@@ -51,6 +64,10 @@ contract Oracle is IOracle, Ownable {
 
         TF ? conditionCounter++ : conditionCounter--;
         trusteeOpinion[trusteeId] = TF;
+
+        if (conditionCounter == numerator && TF) {
+            fulfillmentTime = block.timestamp;
+        }
         
         emit Judged(trustees[trusteeId], TF);
     }

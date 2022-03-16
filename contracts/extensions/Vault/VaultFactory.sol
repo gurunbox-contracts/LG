@@ -15,8 +15,10 @@ contract VaultFactory is Oracle, IVaultFactory {
 
     constructor(
         string memory name_,
-        address _owner
-        ) Oracle(name_, _owner) {
+        address _owner, 
+        address[] memory _trustees, 
+        uint256 _numerator
+        ) Oracle(name_, _owner, _trustees, _numerator) {
     }
 
     function vaultNumber() public view override returns (uint) {
