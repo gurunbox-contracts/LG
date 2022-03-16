@@ -65,18 +65,10 @@ contract Will is IWill, Ownable {
         emit TransferReceiver(preReceiver, receiver);
     }
 
-    function request() external override {
-        require(receiver == msg.sender, "Vault: Not receiver");
-        require(condition(), "Vault: Condition not met");
-        requestedTime = block.timestamp;
-        
-        emit Requested(requestedTime);
-    }
-
     function claimETH(address payable to, uint256 value) external override {
         require(receiver == msg.sender, "Vault: Not receiver");
         require(condition(), "Vault: Condition not met");
-        require(block.timestamp >= requestedTime + gracePeriod, "Vault: Grace period not over");
+        require(block.timestamp >= IOracle(oracle).fulfillmentTime() + gracePeriod, "Vault: Grace period not over");
 
         // To receive Ether since the address of To is payable
         (bool success, ) = to.call{value: value}("");
@@ -88,7 +80,7 @@ contract Will is IWill, Ownable {
     function claim20(address[] calldata tokens, address to, uint256 amount) external override {
         require(receiver == msg.sender, "Vault: Not receiver");
         require(condition(), "Vault: Condition not met");
-        require(block.timestamp >= requestedTime + gracePeriod, "Vault:Grace period not over");
+        require(block.timestamp >= IOracle(oracle).fulfillmentTime() + gracePeriod, "Vault:Grace period not over");
 
         for (uint i = 0; i < tokens.length; i++) {
             IERC20(tokens[i]).transferFrom(owner(), to, amount);
@@ -98,7 +90,7 @@ contract Will is IWill, Ownable {
     function claim721(address token, address to, uint256 tokenId) external override {
         require(receiver == msg.sender, "Vault: Not receiver");
         require(condition(), "Vault: Condition not met");
-        require(block.timestamp >= requestedTime + gracePeriod, "Vault: Grace period not over");
+        require(block.timestamp >= IOracle(oracle).fulfillmentTime() + gracePeriod, "Vault: Grace period not over");
 
         IERC721(token).transferFrom(owner(), to, tokenId);
     }
