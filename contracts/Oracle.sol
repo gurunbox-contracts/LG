@@ -13,22 +13,23 @@ contract Oracle is IOracle, Ownable {
     string private _name;
     uint256 private nextWillId = 0;
 
+    mapping(address => uint256[]) private trusteeIds;
+    
     address public override oracleFactory;
     address[] public override trustees;
     uint256 public override numerator;
     uint256 public override denominator;
     uint256 public override conditionCounter;
     uint256 public override fulfillmentTime;
-
-    mapping(uint256 => address) public override getWills;
     
-    mapping(address => uint256[]) private trusteeIds;
+    mapping(uint256 => address) public override getWills;
     mapping(uint256 => bool) public override trusteeOpinion;
-
+    
     constructor() {
         oracleFactory = msg.sender;
     }
 
+    // called once by the oracle factory at time of deployment
     function initialize(
         string memory name_, 
         address _owner, 
@@ -36,6 +37,7 @@ contract Oracle is IOracle, Ownable {
         uint256 _numerator,
         address _receiver
     ) external override {
+        require(msg.sender == oracleFactory, "Will: FORBIDDEN");
         _name = name_;
         transferOwnership(_owner);
         trustees = _trustees;
@@ -69,6 +71,10 @@ contract Oracle is IOracle, Ownable {
         return IWill(getWills[willId]).receiver();
     }
 
+    function createWill(address receiver) external override onlyOwner returns (address will) {
+        will = _createWill(receiver);
+    }
+
     function setTrustees(address[] memory _trustees, uint256 _numerator) external virtual override onlyOwner {
         trustees = _trustees;
 
@@ -93,10 +99,6 @@ contract Oracle is IOracle, Ownable {
         }
         
         emit Judged(trustees[trusteeId], TF);
-    }
-
-    function createWill(address receiver) external override onlyOwner returns (address will) {
-        will = _createWill(receiver);
     }
 
     function _createWill(address _receiver) internal returns (address _will) {

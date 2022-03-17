@@ -9,23 +9,22 @@ import { IERC721 } from './@OpenZeppelin/contracts/token/ERC721/IERC721.sol';
 import { IOracle } from './interfaces/IOracle.sol';
 
 contract Will is IWill, Ownable {
-    address public override willFactory;
     address public override receiver;
     address public override oracle;
     uint256 public override willId; 
     uint256 public override gracePeriod;
-    uint256 public override requestedTime;
 
     constructor() {
-        willFactory = msg.sender;
+        oracle = msg.sender;
     }
 
     function condition() public view returns (bool) {
         return IOracle(oracle).condition();
     }
 
+    // called once by the oracle factory at time of deployment
     function initialize(address _owner, address _receiver, uint256 _willId) external override {
-        require(msg.sender == willFactory, "Will: FORBIDDEN");
+        require(msg.sender == oracle, "Will: FORBIDDEN");
         transferOwnership(_owner);
         receiver = _receiver;
         oracle = msg.sender;

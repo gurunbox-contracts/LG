@@ -4,7 +4,9 @@ import { Contract, ContractFactory, BigNumber } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 describe("Oracle deployed and set 3 of 5", function() {
-    let Oracle: ContractFactory;
+    let OracleFactory: ContractFactory;
+    let oracleFactory: Contract;
+    let oracleAddress: string
     let oracle: Contract;
     let owner: SignerWithAddress;
     let alice: SignerWithAddress;
@@ -14,9 +16,18 @@ describe("Oracle deployed and set 3 of 5", function() {
     let trustee3: SignerWithAddress;
     let trustee4: SignerWithAddress;
     let trustees: string[];
+    let receiver0: SignerWithAddress;
 
     beforeEach(async function() {
-        [owner, alice, trustee0, trustee1, trustee2, trustee3] = await ethers.getSigners();
+        [
+            owner, 
+            alice, 
+            trustee0, 
+            trustee1, 
+            trustee2, 
+            trustee3,
+            receiver0
+        ] = await ethers.getSigners();
         trustee4 = trustee2;
         trustees = [
             trustee0.address,
@@ -24,10 +35,20 @@ describe("Oracle deployed and set 3 of 5", function() {
             trustee2.address,
             trustee3.address,
             trustee4.address,
-        ];        
-        Oracle = await ethers.getContractFactory("Oracle");
-        oracle = await Oracle.deploy("Test", owner.address, trustees, 3);
-        await oracle.deployed();
+        ]; 
+        OracleFactory = await ethers.getContractFactory("OracleFactory");
+        oracleFactory = await OracleFactory.deploy();
+        await oracleFactory.deployed();
+
+        await oracleFactory.connect(owner).createOracle(
+            "Test", 
+            owner.address, 
+            trustees, 
+            3, 
+            receiver0.address
+            );
+        oracleAddress = await oracleFactory.getOracles(0);
+        oracle = await ethers.getContractAt("Oracle", oracleAddress);
     })
 
     it("Should return the name, owenr address", async function() {

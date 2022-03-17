@@ -24,6 +24,7 @@ contract OracleFactory is IOracleFactory {
 
         IOracle(oracle).initialize(name_, _owner, _trustees, _numerator, _receiver);
         getOracles[nextOracleId] = oracle;
+        nextOracleId++;
 
         emit OracleCreated(oracle, name_, _owner);
     }
