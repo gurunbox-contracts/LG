@@ -2,17 +2,24 @@
 
 pragma solidity ^0.8.0;
 
-import {IOracle} from "./IOracle.sol";
+import {IOracle} from "./interfaces/IOracle.sol";
+import { IWill } from './interfaces/IWill.sol';
+import { Will } from './Will.sol';
 import {Ownable} from './@OpenZeppelin/contracts/access/Ownable.sol';
+import { Create2 } from './@OpenZeppelin/contracts/utils/Create2.sol';
+
 
 contract Oracle is IOracle, Ownable {
     string private _name;
+    uint256 private nextWillId = 0;
 
     address[] public override trustees;
     uint256 public override numerator;
     uint256 public override denominator;
     uint256 public override conditionCounter;
     uint256 public override fulfillmentTime;
+
+    mapping(uint256 => address) public override getWills;
     
     mapping(address => uint256[]) private trusteeIds;
     mapping(uint256 => bool) public override trusteeOpinion;
@@ -46,6 +53,14 @@ contract Oracle is IOracle, Ownable {
         return trusteeIds[_trustee];
     }
 
+    function willNumber() public view override returns (uint256) {
+        return nextWillId;
+    }
+
+    function getReceivers(uint256 willId) public view override returns (address) {
+        return IWill(getWills[willId]).receiver();
+    }
+
     function setTrustees(address[] memory _trustees, uint256 _numerator) external virtual override onlyOwner {
         trustees = _trustees;
 
@@ -70,5 +85,24 @@ contract Oracle is IOracle, Ownable {
         }
         
         emit Judged(trustees[trusteeId], TF);
+    }
+
+    function createWill(address receiver) external override onlyOwner returns (address will) {
+        will = _createWill(receiver);
+    }
+
+    function _createWill(address _receiver) internal returns (address _will) {
+        require(_receiver != address(0), 'WillFactory: RECEIVER_ZERO_ADDRESS');
+        
+        bytes memory bytecode = type(Will).creationCode;
+        bytes32 salt = keccak256(abi.encodePacked(owner(), _receiver, nextWillId));
+        _will = Create2.deploy(0, salt, bytecode);
+
+        IWill(_will).initialize(owner(), _receiver, nextWillId);
+
+        getWills[nextWillId] = _will;
+        nextWillId++;
+        
+        emit WillCreated(owner(), _receiver, _will, nextWillId - 1);
     }
 }
