@@ -2,10 +2,10 @@
 
 pragma solidity ^0.8.0;
 
-import {IOracle} from "./interfaces/IOracle.sol";
+import { IOracle } from "./interfaces/IOracle.sol";
 import { IWill } from './interfaces/IWill.sol';
 import { Will } from './Will.sol';
-import {Ownable} from './@OpenZeppelin/contracts/access/Ownable.sol';
+import { Ownable } from './@OpenZeppelin/contracts/access/Ownable.sol';
 import { Create2 } from './@OpenZeppelin/contracts/utils/Create2.sol';
 
 
@@ -13,6 +13,7 @@ contract Oracle is IOracle, Ownable {
     string private _name;
     uint256 private nextWillId = 0;
 
+    address public override oracleFactory;
     address[] public override trustees;
     uint256 public override numerator;
     uint256 public override denominator;
@@ -24,12 +25,17 @@ contract Oracle is IOracle, Ownable {
     mapping(address => uint256[]) private trusteeIds;
     mapping(uint256 => bool) public override trusteeOpinion;
 
-    constructor(
+    constructor() {
+        oracleFactory = msg.sender;
+    }
+
+    function initialize(
         string memory name_, 
         address _owner, 
         address[] memory _trustees, 
-        uint256 _numerator
-        ) {
+        uint256 _numerator,
+        address _receiver
+    ) external override {
         _name = name_;
         transferOwnership(_owner);
         trustees = _trustees;
@@ -39,6 +45,8 @@ contract Oracle is IOracle, Ownable {
         for (uint256 i = 0; i < trustees.length; i++) {
             trusteeIds[trustees[i]].push(i);
         }
+
+        _createWill(_receiver);
     }
 
     function condition() external view override returns (bool) {
