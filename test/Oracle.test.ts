@@ -64,7 +64,6 @@ describe("Oracle deployed and set 3 of 5", function() {
         expect(await oracle.trustees(4)).to.equal(trustee2.address);
 
         expect(await oracle.numerator()).to.equal(3);
-        expect(await oracle.denominator()).to.equal(5);
     })
 
     it("Should return trusteeIds of each trustee address", async function() {

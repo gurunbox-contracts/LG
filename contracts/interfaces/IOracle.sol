@@ -9,7 +9,6 @@ interface IOracle {
     function oracleFactory() external view returns (address);
     function trustees(uint256) external view returns (address);
     function numerator() external view returns (uint256);
-    function denominator() external view returns (uint256);
     function conditionCounter() external view returns (uint256);
     function fulfillmentTime() external view returns (uint256);
     function getWills(uint256 willId) external view returns (address will);

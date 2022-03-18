@@ -8,7 +8,6 @@ import { Will } from './Will.sol';
 import { Ownable } from './@OpenZeppelin/contracts/access/Ownable.sol';
 import { Create2 } from './@OpenZeppelin/contracts/utils/Create2.sol';
 
-
 contract Oracle is IOracle, Ownable {
     string private _name;
     uint256 private nextWillId = 0;
@@ -18,7 +17,6 @@ contract Oracle is IOracle, Ownable {
     address public override oracleFactory;
     address[] public override trustees;
     uint256 public override numerator;
-    uint256 public override denominator;
     uint256 public override conditionCounter;
     uint256 public override fulfillmentTime;
     
@@ -42,7 +40,6 @@ contract Oracle is IOracle, Ownable {
         transferOwnership(_owner);
         trustees = _trustees;
         numerator = _numerator;
-        denominator = _trustees.length;
 
         for (uint256 i = 0; i < trustees.length; i++) {
             trusteeIds[trustees[i]].push(i);
@@ -80,7 +77,6 @@ contract Oracle is IOracle, Ownable {
 
         require(_numerator <= trustees.length, "Oracle: Numerator must be less than or equal to denominator");
         numerator = _numerator;
-        denominator = trustees.length;
 
         for (uint256 i = 0; i < trustees.length; i++) {
             trusteeIds[trustees[i]].push(i);
