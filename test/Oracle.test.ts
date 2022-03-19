@@ -51,6 +51,8 @@ describe("Oracle", function() {
             );
         oracleAddress = await oracleFactory.getOracles(0);
         oracle = await ethers.getContractAt("Oracle", oracleAddress);
+        willAddress0 = await oracle.getWills(0);
+        will0 = await ethers.getContractAt("Will", willAddress0);
     })
 
     it("Should return the initialized values", async function() {
@@ -66,7 +68,7 @@ describe("Oracle", function() {
 
         expect(await oracle.numerator()).to.equal(3);
 
-        // expect(await oracle.receiver()).to.equal(receiver0.address);
+        expect(await will0.receiver()).to.equal(receiver0.address);
     });
 
     it("Should return trusteeIds of each trustee address", async function() {
