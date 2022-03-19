@@ -3,11 +3,13 @@ import { ethers } from "hardhat";
 import { Contract, ContractFactory, BigNumber } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-describe("Oracle deployed and set 3 of 5", function() {
+describe("Oracle", function() {
     let OracleFactory: ContractFactory;
     let oracleFactory: Contract;
     let oracleAddress: string
     let oracle: Contract;
+    let willAddress0: string;
+    let will0: Contract;
     let owner: SignerWithAddress;
     let alice: SignerWithAddress;
     let trustee0: SignerWithAddress;
@@ -51,12 +53,11 @@ describe("Oracle deployed and set 3 of 5", function() {
         oracle = await ethers.getContractAt("Oracle", oracleAddress);
     })
 
-    it("Should return the name, owenr address", async function() {
+    it("Should return the initialized values", async function() {
         expect(await oracle.name()).to.equal("Test");
-        expect(await oracle.owner()).to.equal(owner.address);
-    });
 
-    it("Should return 5 trustees, 3 numerator", async function() {
+        expect(await oracle.owner()).to.equal(owner.address);
+
         expect(await oracle.trustees(0)).to.equal(trustee0.address);
         expect(await oracle.trustees(1)).to.equal(trustee1.address);
         expect(await oracle.trustees(2)).to.equal(trustee2.address);
@@ -64,7 +65,9 @@ describe("Oracle deployed and set 3 of 5", function() {
         expect(await oracle.trustees(4)).to.equal(trustee2.address);
 
         expect(await oracle.numerator()).to.equal(3);
-    })
+
+        // expect(await oracle.receiver()).to.equal(receiver0.address);
+    });
 
     it("Should return trusteeIds of each trustee address", async function() {
         let [id_address0] = await oracle.getTrusteeIds(trustee0.address)

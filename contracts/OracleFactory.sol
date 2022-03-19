@@ -26,6 +26,6 @@ contract OracleFactory is IOracleFactory {
         getOracles[nextOracleId] = oracle;
         nextOracleId++;
 
-        emit OracleCreated(oracle, name_, _owner);
+        emit OracleCreated(oracle, nextOracleId - 1, name_, _owner);
     }
 }
