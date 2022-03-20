@@ -3,12 +3,10 @@ import { ethers } from "hardhat";
 import { Contract, ContractFactory, BigNumber } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
+import { oracleFixture } from "./shared/fixtures";
+
 describe("Oracle", function() {
-    let OracleFactory: ContractFactory;
-    let oracleFactory: Contract;
-    let oracleAddress: string
     let oracle: Contract;
-    let willAddress0: string;
     let will0: Contract;
     let owner: SignerWithAddress;
     let alice: SignerWithAddress;
@@ -38,21 +36,18 @@ describe("Oracle", function() {
             trustee3.address,
             trustee4.address,
         ]; 
-        OracleFactory = await ethers.getContractFactory("OracleFactory");
-        oracleFactory = await OracleFactory.deploy();
-        await oracleFactory.deployed();
 
-        await oracleFactory.connect(owner).createOracle(
+        const fixture = await oracleFixture(
             "Test", 
-            owner.address, 
+            owner, 
             trustees, 
             3, 
-            receiver0.address
-            );
-        oracleAddress = await oracleFactory.getOracles(0);
-        oracle = await ethers.getContractAt("Oracle", oracleAddress);
-        willAddress0 = await oracle.getWills(0);
-        will0 = await ethers.getContractAt("Will", willAddress0);
+            receiver0
+        );
+        oracle = fixture.oracle;
+        will0 = fixture.will;
+
+
     })
 
     it("Should return the initialized values", async function() {
