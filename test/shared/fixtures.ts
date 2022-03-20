@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ethers } from "hardhat";
-import { Contract, ContractFactory, Wallet } from "ethers";
+import { Contract, ContractFactory, Wallet, BigNumber } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { MockProvider } from 'ethereum-waffle';
 const provider = new MockProvider();
@@ -16,9 +16,10 @@ export async function oracleFixture(
     owner: SignerWithAddress,
     trustees: string[],
     numerator: number,
-    receiver: SignerWithAddress
+    receiver: SignerWithAddress,
+    gracePeriod: BigNumber
 ): Promise<OracleFixture> {
-    let OracleFactory = await ethers.getContractFactory("OracleFactory");
+    const OracleFactory = await ethers.getContractFactory("OracleFactory");
     const oracleFactory = await OracleFactory.deploy();
     await oracleFactory.deployed();
     await oracleFactory.connect(owner).createOracle(
@@ -26,7 +27,8 @@ export async function oracleFixture(
         owner.address, 
         trustees, 
         numerator, 
-        receiver.address
+        receiver.address,
+        gracePeriod
         );
     const oracleAddress: string = await oracleFactory.getOracles(0);
     const oracle: Contract = await ethers.getContractAt("Oracle", oracleAddress);
@@ -36,27 +38,61 @@ export async function oracleFixture(
     return { oracleFactory, oracle, will };
 }
 
-interface WillFactoryFixture {
-    willFactory: Contract;
+interface WillFixture extends OracleFixture {
+    token20: Contract;
+    token721: Contract;
 }
 
-export async function willFactoryFixture(
+export async function willFixture(
     name: string,
     owner: SignerWithAddress,
     trustees: string[],
     numerator: number,
-    receiver: string
-    ): Promise<WillFactoryFixture> {
-    let WillFactory = await ethers.getContractFactory("WillFactory");
-    const willFactory = await WillFactory.deploy(name, owner.address, trustees, numerator, receiver);
-    return { willFactory };
+    receiver: SignerWithAddress,
+    gracePeriod: BigNumber
+): Promise<WillFixture> {
+    const fixture = await oracleFixture(
+        name,
+        owner,
+        trustees,
+        numerator,
+        receiver,
+        gracePeriod
+    );
+    const Token20 = await ethers.getContractFactory("Token20");
+    const token20 = await Token20.deploy("Test20", "T20");
+    const Token721 = await ethers.getContractFactory("Token721");
+    const token721 = await Token721.deploy("Test721", "T721", "http://example.com/");
+    await token20.deployed();
+    await token721.deployed();
+    return {
+        ...fixture,
+        token20,
+        token721
+    };
 }
 
-interface WillFixture extends WillFactoryFixture {
-    will: Contract;
-    token20: Contract;
-    token721: Contract;
-}
+// interface WillFactoryFixture {
+//     willFactory: Contract;
+// }
+
+// export async function willFactoryFixture(
+//     name: string,
+//     owner: SignerWithAddress,
+//     trustees: string[],
+//     numerator: number,
+//     receiver: string
+//     ): Promise<WillFactoryFixture> {
+//     let WillFactory = await ethers.getContractFactory("WillFactory");
+//     const willFactory = await WillFactory.deploy(name, owner.address, trustees, numerator, receiver);
+//     return { willFactory };
+// }
+
+// interface WillFixture extends WillFactoryFixture {
+//     will: Contract;
+//     token20: Contract;
+//     token721: Contract;
+// }
 
 // export async function willFixture(
 //     name: string,

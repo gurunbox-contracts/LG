@@ -33,7 +33,8 @@ contract Oracle is IOracle, Ownable {
         address _owner, 
         address[] memory _trustees, 
         uint256 _numerator,
-        address _receiver
+        address _receiver, 
+        uint256 _gracePeriod
     ) external override {
         require(msg.sender == oracleFactory, "Will: FORBIDDEN");
         _name = name_;
@@ -45,7 +46,7 @@ contract Oracle is IOracle, Ownable {
             trusteeIds[trustees[i]].push(i);
         }
 
-        _createWill(_receiver);
+        _createWill(_receiver, _gracePeriod);
     }
 
     function condition() external view override returns (bool) {
@@ -68,8 +69,8 @@ contract Oracle is IOracle, Ownable {
         return IWill(getWills[willId]).receiver();
     }
 
-    function createWill(address receiver) external override onlyOwner returns (address will) {
-        will = _createWill(receiver);
+    function createWill(address receiver, uint256 _gracePeriod) external override onlyOwner returns (address will) {
+        will = _createWill(receiver, _gracePeriod);
     }
 
     function setTrustees(address[] memory _trustees, uint256 _numerator) external virtual override onlyOwner {
@@ -97,14 +98,14 @@ contract Oracle is IOracle, Ownable {
         emit Judged(trustees[trusteeId], TF);
     }
 
-    function _createWill(address _receiver) internal returns (address _will) {
+    function _createWill(address _receiver, uint256 _gracePeriod) internal returns (address _will) {
         require(_receiver != address(0), 'WillFactory: RECEIVER_ZERO_ADDRESS');
         
         bytes memory bytecode = type(Will).creationCode;
         bytes32 salt = keccak256(abi.encodePacked(owner(), _receiver, nextWillId));
         _will = Create2.deploy(0, salt, bytecode);
 
-        IWill(_will).initialize(owner(), _receiver, nextWillId);
+        IWill(_will).initialize(owner(), _receiver, nextWillId, _gracePeriod);
 
         getWills[nextWillId] = _will;
         nextWillId++;

@@ -23,12 +23,13 @@ contract Will is IWill, Ownable {
     }
 
     // called once by the oracle factory at time of deployment
-    function initialize(address _owner, address _receiver, uint256 _willId) external override {
+    function initialize(address _owner, address _receiver, uint256 _willId, uint256 _gracePeriod) external override {
         require(msg.sender == oracle, "Will: FORBIDDEN");
         transferOwnership(_owner);
         receiver = _receiver;
         oracle = msg.sender;
         willId = _willId;
+        gracePeriod = _gracePeriod;
 
         emit TransferReceiver(address(0), receiver);
     }

@@ -25,9 +25,10 @@ interface IOracle {
         address _owner, 
         address[] memory _trustees, 
         uint256 _numerator,
-        address _receiver
+        address _receiver, 
+        uint256 _gracePeriod
     ) external;
-    function createWill(address receiver) external returns (address will);
+    function createWill(address receiver, uint256 _gracePeriod) external returns (address will);
     function setTrustees(address[] memory _trustees, uint256 _numerator) external;
     function judge(bool TF, uint256 trusteeId) external;   
 }

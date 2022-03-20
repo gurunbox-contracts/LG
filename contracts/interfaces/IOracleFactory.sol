@@ -10,6 +10,7 @@ interface IOracleFactory {
         address _owner, 
         address[] memory _trustees, 
         uint256 _numerator,
-        address _receiver
+        address _receiver, 
+        uint256 _gracePeriod
     ) external returns (address oracle);
 }

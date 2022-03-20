@@ -11,6 +11,7 @@ describe("OracleFactory", function() {
     let trustee1: SignerWithAddress;
     let trustees: string[];
     let receiver0: SignerWithAddress;
+    let gracePeriod: BigNumber;
 
     beforeEach(async function() {
         [
@@ -23,6 +24,8 @@ describe("OracleFactory", function() {
             trustee0.address,
             trustee1.address,
         ]; 
+        gracePeriod = BigNumber.from(100);
+
         OracleFactory = await ethers.getContractFactory("OracleFactory");
         oracleFactory = await OracleFactory.deploy();
         await oracleFactory.deployed();
@@ -34,7 +37,8 @@ describe("OracleFactory", function() {
             owner.address, 
             trustees, 
             1, 
-            receiver0.address
+            receiver0.address,
+            gracePeriod
             ))
             .to.emit(oracleFactory, "OracleCreated")
             .withArgs(
@@ -65,7 +69,8 @@ describe("OracleFactory", function() {
             owner.address, 
             trustees, 
             1, 
-            receiver0.address
+            receiver0.address,
+            gracePeriod
             );
         
         await expect(oracleFactory.connect(owner).createOracle(
@@ -73,7 +78,8 @@ describe("OracleFactory", function() {
             owner.address, 
             trustees, 
             1, 
-            receiver0.address
+            receiver0.address,
+            gracePeriod
             )).to.be.revertedWith("Create2: Failed on deploy");
     })
 })

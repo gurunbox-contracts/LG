@@ -11,7 +11,7 @@ interface IWill {
     function willId() external view returns (uint256);
     function gracePeriod() external view returns (uint256);
 
-    function initialize(address _owner, address _receiver, uint256 _willId) external;
+    function initialize(address _owner, address _receiver, uint256 _willId, uint256 _gracePeriod) external;
     function depositETH() external payable;
     function withdrawETH(address payable to, uint256 value) external;
     function changeOracle(address _oracle) external;

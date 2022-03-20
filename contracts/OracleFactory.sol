@@ -16,13 +16,14 @@ contract OracleFactory is IOracleFactory {
         address _owner, 
         address[] memory _trustees, 
         uint256 _numerator,
-        address _receiver
+        address _receiver, 
+        uint256 _gracePeriod
     ) external override returns (address oracle) {
         bytes memory bytecode = type(Oracle).creationCode;
         bytes32 salt = keccak256(abi.encodePacked(name_, _owner));
         oracle = Create2.deploy(0, salt, bytecode);
 
-        IOracle(oracle).initialize(name_, _owner, _trustees, _numerator, _receiver);
+        IOracle(oracle).initialize(name_, _owner, _trustees, _numerator, _receiver, _gracePeriod);
         getOracles[nextOracleId] = oracle;
         nextOracleId++;
 

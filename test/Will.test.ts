@@ -3,15 +3,13 @@ import { ethers } from "hardhat";
 import { Contract, ContractFactory, BigNumber } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
+import { willFixture } from "./shared/fixtures";
+
 describe("Will", function() {
-    let OracleFactory: ContractFactory;
-    let oracleFactory: Contract;
-    let oracleAddress: string
     let oracle: Contract;
-    let willAddress0: string;
-    let will0: Contract;
-    let token20A: Contract;
-    let token721A: Contract;
+    let will: Contract;
+    let token20: Contract;
+    let token721: Contract;
     let owner: SignerWithAddress;
     let alice: SignerWithAddress;
     let trustee0: SignerWithAddress;
@@ -21,6 +19,7 @@ describe("Will", function() {
     let trustee4: SignerWithAddress;
     let trustees: string[];
     let receiver0: SignerWithAddress;
+    let gracePeriod: BigNumber;
 
     beforeEach(async function() {
         [
@@ -40,20 +39,26 @@ describe("Will", function() {
             trustee3.address,
             trustee4.address,
         ]; 
-        OracleFactory = await ethers.getContractFactory("OracleFactory");
-        oracleFactory = await OracleFactory.deploy();
-        await oracleFactory.deployed();
+        gracePeriod = BigNumber.from(100);
 
-        await oracleFactory.connect(owner).createOracle(
+        const fixture = await willFixture(
             "Test", 
-            owner.address, 
+            owner, 
             trustees, 
             3, 
-            receiver0.address
-            );
-        oracleAddress = await oracleFactory.getOracles(0);
-        oracle = await ethers.getContractAt("Oracle", oracleAddress);
-        willAddress0 = await oracle.getWills(0);
-        will0 = await ethers.getContractAt("Will", willAddress0);
+            receiver0,
+            gracePeriod
+        );
+        oracle = fixture.oracle;
+        will = fixture.will;
+        token20 = fixture.token20;
+        token721 = fixture.token721;
+    })
+
+    it("Should return the initialized values", async function() {
+        expect(await will.owner()).to.equal(owner.address);
+        expect(await will.receiver()).to.equal(receiver0.address);
+        expect(await will.oracle()).to.equal(oracle.address);
+        expect(await will.willId()).to.equal(0);
     })
 })

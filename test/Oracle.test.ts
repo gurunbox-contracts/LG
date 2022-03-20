@@ -17,6 +17,7 @@ describe("Oracle", function() {
     let trustee4: SignerWithAddress;
     let trustees: string[];
     let receiver0: SignerWithAddress;
+    let gracePeriod: BigNumber;
 
     beforeEach(async function() {
         [
@@ -36,13 +37,15 @@ describe("Oracle", function() {
             trustee3.address,
             trustee4.address,
         ]; 
+        gracePeriod = BigNumber.from(100);
 
         const fixture = await oracleFixture(
             "Test", 
             owner, 
             trustees, 
             3, 
-            receiver0
+            receiver0,
+            gracePeriod
         );
         oracle = fixture.oracle;
         will0 = fixture.will;
