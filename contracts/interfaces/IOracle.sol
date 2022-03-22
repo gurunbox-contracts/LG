@@ -16,7 +16,7 @@ interface IOracle {
 
     function condition() external view returns (bool);
     function name() external view returns (string memory);
-    function getTrusteeIds(address _trustee) external view returns (uint256[] memory);
+    function trusteesLength() external view returns (uint256);
     function willNumber() external view returns (uint256);
     function getReceivers(uint256 willId) external view returns (address);
     
@@ -28,7 +28,7 @@ interface IOracle {
         address _receiver, 
         uint256 _gracePeriod
     ) external;
-    function createWill(address receiver, uint256 _gracePeriod) external returns (address will);
     function setTrustees(address[] memory _trustees, uint256 _numerator) external;
-    function judge(bool TF, uint256 trusteeId) external;   
+    function judge(bool TF, uint256 trusteeId) external;
+    function createWill(address receiver, uint256 _gracePeriod) external returns (address will);
 }

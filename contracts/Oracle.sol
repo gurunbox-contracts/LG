@@ -8,11 +8,12 @@ import { Will } from './Will.sol';
 import { Ownable } from './@OpenZeppelin/contracts/access/Ownable.sol';
 import { Create2 } from './@OpenZeppelin/contracts/utils/Create2.sol';
 
+import "hardhat/console.sol";
+
 contract Oracle is IOracle, Ownable {
     string private _name;
     uint256 private nextWillId = 0;
-
-    mapping(address => uint256[]) private trusteeIds;
+    address[] private ZERO_ARRAY = new address[](0);
     
     address public override oracleFactory;
     address[] public override trustees;
@@ -42,10 +43,6 @@ contract Oracle is IOracle, Ownable {
         trustees = _trustees;
         numerator = _numerator;
 
-        for (uint256 i = 0; i < trustees.length; i++) {
-            trusteeIds[trustees[i]].push(i);
-        }
-
         _createWill(_receiver, _gracePeriod);
     }
 
@@ -57,8 +54,8 @@ contract Oracle is IOracle, Ownable {
         return _name;
     }
 
-    function getTrusteeIds(address _trustee) public view override returns (uint[] memory) {
-        return trusteeIds[_trustee];
+    function trusteesLength() public view override returns (uint256) {
+        return trustees.length;
     }
 
     function willNumber() public view override returns (uint256) {
@@ -69,21 +66,17 @@ contract Oracle is IOracle, Ownable {
         return IWill(getWills[willId]).receiver();
     }
 
-    function createWill(address receiver, uint256 _gracePeriod) external override onlyOwner returns (address will) {
-        will = _createWill(receiver, _gracePeriod);
-    }
-
-    function setTrustees(address[] memory _trustees, uint256 _numerator) external virtual override onlyOwner {
-        trustees = _trustees;
-
-        require(_numerator <= trustees.length, "Oracle: Numerator must be less than or equal to denominator");
+    function setTrustees(address[] memory newTrustees, uint256 _numerator) external virtual override onlyOwner {
+        require(_numerator <= newTrustees.length, "Oracle: Numerator must be less than or equal to denominator");
+        trustees = newTrustees;
         numerator = _numerator;
-
-        for (uint256 i = 0; i < trustees.length; i++) {
-            trusteeIds[trustees[i]].push(i);
-        }
     }
 
+    /** 
+     * @dev only trustees can judge. It is only when the condition is met just from false to true that block.timestamp will be recorded.
+     * @param TF is the boolean value of the judgement by each trustee.
+     * @param trusteeId is the index of the trustee in the array of trustees.
+     */
     function judge(bool TF, uint256 trusteeId) external virtual override {
         require(trustees[trusteeId] == msg.sender, "Oracle: Not a trustee");
         require(trusteeOpinion[trusteeId] != TF, "Oracle: The opinion you're trying to send has already been sent");
@@ -96,6 +89,10 @@ contract Oracle is IOracle, Ownable {
         }
         
         emit Judged(trustees[trusteeId], TF);
+    }
+    
+    function createWill(address receiver, uint256 _gracePeriod) external override onlyOwner returns (address will) {
+        will = _createWill(receiver, _gracePeriod);
     }
 
     function _createWill(address _receiver, uint256 _gracePeriod) internal returns (address _will) {
