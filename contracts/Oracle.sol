@@ -8,8 +8,6 @@ import { Will } from './Will.sol';
 import { Ownable } from './@OpenZeppelin/contracts/access/Ownable.sol';
 import { Create2 } from './@OpenZeppelin/contracts/utils/Create2.sol';
 
-import "hardhat/console.sol";
-
 contract Oracle is IOracle, Ownable {
     string private _name;
     uint256 private nextWillId = 0;
