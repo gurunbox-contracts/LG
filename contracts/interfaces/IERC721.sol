@@ -7,7 +7,7 @@ import { IERC165 } from './IERC165.sol';
 /**
  * @dev Required interface of an ERC721 compliant contract.
  */
-interface IAlertERC721 is IERC165 {
+interface IERC721 is IERC165 {
     /**
      * @dev Emitted when `tokenId` token is transferred from `from` to `to`.
      */
@@ -22,6 +22,21 @@ interface IAlertERC721 is IERC165 {
      * @dev Emitted when `owner` enables or disables (`approved`) `operator` to manage all of its assets.
      */
     event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
+
+    /**
+     * @dev Returns the token collection name.
+     */
+    function name() external view returns (string memory);
+
+    /**
+     * @dev Returns the token collection symbol.
+     */
+    function symbol() external view returns (string memory);
+
+    /**
+     * @dev Returns the Uniform Resource Identifier (URI) for `tokenId` token.
+     */
+    function tokenURI(uint256 tokenId) external view returns (string memory);
 
     /**
      * @dev Returns the number of tokens in ``owner``'s account.

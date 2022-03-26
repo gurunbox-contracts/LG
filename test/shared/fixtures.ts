@@ -12,7 +12,7 @@ interface OracleFixture {
 }
 
 export async function oracleFixture(
-    name: string,
+    proposition: string,
     owner: SignerWithAddress,
     trustees: string[],
     numerator: number,
@@ -23,7 +23,7 @@ export async function oracleFixture(
     const oracleFactory = await OracleFactory.deploy();
     await oracleFactory.deployed();
     await oracleFactory.connect(owner).createOracle(
-        name, 
+        proposition, 
         owner.address, 
         trustees, 
         numerator, 
@@ -44,7 +44,7 @@ interface WillFixture extends OracleFixture {
 }
 
 export async function willFixture(
-    name: string,
+    proposition: string,
     owner: SignerWithAddress,
     trustees: string[],
     numerator: number,
@@ -52,7 +52,7 @@ export async function willFixture(
     gracePeriod: BigNumber
 ): Promise<WillFixture> {
     const fixture = await oracleFixture(
-        name,
+        proposition,
         owner,
         trustees,
         numerator,
@@ -77,14 +77,14 @@ export async function willFixture(
 // }
 
 // export async function willFactoryFixture(
-//     name: string,
+//     proposition: string,
 //     owner: SignerWithAddress,
 //     trustees: string[],
 //     numerator: number,
 //     receiver: string
 //     ): Promise<WillFactoryFixture> {
 //     let WillFactory = await ethers.getContractFactory("WillFactory");
-//     const willFactory = await WillFactory.deploy(name, owner.address, trustees, numerator, receiver);
+//     const willFactory = await WillFactory.deploy(proposition, owner.address, trustees, numerator, receiver);
 //     return { willFactory };
 // }
 
@@ -95,11 +95,11 @@ export async function willFixture(
 // }
 
 // export async function willFixture(
-//     name: string,
+//     proposition: string,
 //     owner: SignerWithAddress,
 //     receiver: SignerWithAddress
 // ): Promise<WillFixture> {
-//     const { willFactory } = await willFactoryFixture(name, owner);
+//     const { willFactory } = await willFactoryFixture(proposition, owner);
 //     await willFactory.connect(owner).createWill(receiver.address);
 //     return { willFactory, will, token20, token721 }
 // }

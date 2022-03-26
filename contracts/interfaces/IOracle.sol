@@ -15,7 +15,7 @@ interface IOracle {
     function trusteeOpinion(uint256 trusteeId) external view returns (bool);
 
     function condition() external view returns (bool);
-    function name() external view returns (string memory);
+    function proposition() external view returns (string memory);
     function trusteesLength() external view returns (uint256);
     function willNumber() external view returns (uint256);
     function getReceivers(uint256 willId) external view returns (address);

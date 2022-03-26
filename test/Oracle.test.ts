@@ -54,7 +54,7 @@ describe("Oracle", function() {
     })
 
     it("Should return the initialized values", async function() {
-        expect(await oracle.name()).to.equal("Test");
+        expect(await oracle.proposition()).to.equal("Test");
 
         expect(await oracle.owner()).to.equal(owner.address);
 
