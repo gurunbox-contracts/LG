@@ -2,14 +2,13 @@
 
 pragma solidity ^0.8.0;
 
-import { AlertERC721, IERC721 } from "./AlertERC721.sol";
 import { IOracle } from "./interfaces/IOracle.sol";
 import { IWill } from './interfaces/IWill.sol';
 import { Will } from './Will.sol';
 import { Ownable } from './@OpenZeppelin/contracts/access/Ownable.sol';
 import { Create2 } from './@OpenZeppelin/contracts/utils/Create2.sol';
 
-contract Oracle is AlertERC721, IOracle, Ownable {
+contract Oracle is IOracle, Ownable {
     string private _proposition;
     uint256 private nextWillId = 0;
     address[] private ZERO_ARRAY = new address[](0);
