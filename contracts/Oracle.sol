@@ -5,8 +5,8 @@ pragma solidity ^0.8.0;
 import { IOracle } from "./interfaces/IOracle.sol";
 import { IWill } from './interfaces/IWill.sol';
 import { Will } from './Will.sol';
-import { Ownable } from './@OpenZeppelin/contracts/access/Ownable.sol';
-import { Create2 } from './@OpenZeppelin/contracts/utils/Create2.sol';
+import { Ownable } from './utils/Ownable.sol';
+import { Create2 } from './utils/Create2.sol';
 
 contract Oracle is IOracle, Ownable {
     string private _proposition;

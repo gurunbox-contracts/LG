@@ -6,6 +6,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 describe("OracleFactory", function() {
     let OracleFactory: ContractFactory;
     let oracleFactory: Contract;
+    let deployer: SignerWithAddress;
     let owner: SignerWithAddress;
     let trustee0: SignerWithAddress;
     let trustee1: SignerWithAddress;
@@ -15,6 +16,7 @@ describe("OracleFactory", function() {
 
     beforeEach(async function() {
         [
+            deployer,
             owner,
             trustee0, 
             trustee1,
@@ -30,6 +32,47 @@ describe("OracleFactory", function() {
         oracleFactory = await OracleFactory.deploy();
         await oracleFactory.deployed();
     })
+
+    it("Should return name, symbol and tokenURI", async function() {
+        expect(await oracleFactory.name()).to.equal("Alert NFT");
+        expect(await oracleFactory.symbol()).to.equal("ALERT");
+    })
+
+    it("Should support interfaces of ERC165, ERC721, ERC721Metadata", async function() {
+        const INTERFACE_ID_ERC165 = "0x01ffc9a7";
+        const INTERFACE_ID_ERC721 = "0x80ac58cd";
+        const INTERFACE_ID_ERC721Metadata = "0x5b5e139f";
+
+        expect(await oracleFactory.supportsInterface(INTERFACE_ID_ERC165)).to.be.true;
+        expect(await oracleFactory.supportsInterface(INTERFACE_ID_ERC721)).to.be.true;
+        expect(await oracleFactory.supportsInterface(INTERFACE_ID_ERC721Metadata)).to.be.true;
+    })
+
+    it("Should return balance of deployer and owner of tokenId 0", async function() {
+        expect(await oracleFactory.balanceOf(deployer.address)).to.equal(1);
+        expect(await oracleFactory.ownerOf(0)).to.equal(deployer.address);
+    })
+
+    it("Should return tokenURI of tokenId 0 when initialized and set another tokenURI", async function() {
+        expect(await oracleFactory.tokenURI(0)).to.equal("");
+
+        await oracleFactory.setTokenURI("https://example.com/");
+        expect(await oracleFactory.tokenURI(0)).to.equal("https://example.com/");
+    })
+
+    it("Should return getApproved of tokenId 0", async function() {
+        expect(await oracleFactory.getApproved(0)).to.equal(constants.AddressZero);
+    })
+
+
+
+    it("Should revert approve", async function() {
+        await expect(oracleFactory.approve(constants.AddressZero, 0))
+            .to.be.revertedWith("NTT");
+    })
+
+
+
 
     it("Should create Oracle", async function() {
         expect(await oracleFactory.connect(owner).createOracle(

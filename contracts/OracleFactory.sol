@@ -7,7 +7,7 @@ import { IOracleFactory } from './interfaces/IOracleFactory.sol';
 import { IOracle } from './interfaces/IOracle.sol'; 
 import { Oracle } from './Oracle.sol';
 import { Counters } from './utils/Counters.sol';
-import { Create2 } from './@OpenZeppelin/contracts/utils/Create2.sol';
+import { Create2 } from './utils/Create2.sol';
 
 contract OracleFactory is ERC721, IOracleFactory {
     using Counters for Counters.Counter;
@@ -15,6 +15,7 @@ contract OracleFactory is ERC721, IOracleFactory {
     Counters.Counter private _tokenIdTracker;
 
     uint256 private nextOracleId;
+    string private _tokenURI;
     bool private constant transferable = false; 
 
     // Mapping from oracleId to Oracle address
@@ -33,7 +34,10 @@ contract OracleFactory is ERC721, IOracleFactory {
     mapping(address => mapping(address => bool)) private _operatorApprovals;
 
     // Alert NFT should be minted to owner when condition is met.
-    constructor() ERC721("Alert NFT", "ALERT") { }
+    constructor() ERC721("Alert NFT", "ALERT") {
+        _mint(msg.sender, _tokenIdTracker.current());
+        _tokenIdTracker.increment();
+     }
 
     function createOracle(
         string memory name_, 
@@ -63,10 +67,23 @@ contract OracleFactory is ERC721, IOracleFactory {
         _tokenIdTracker.increment();
     }
 
-    function burn(uint256 tokenId, uint256 oracleId) public virtual {
+    function burn(uint256 tokenId, uint256 oracleId) public {
         require(msg.sender == getOracles[oracleId], "OracleFactory: caller is not oracle");
 
         _burn(tokenId);
+    }
+
+    function setTokenURI(string memory uri) public {
+        _tokenURI = uri;
+    }
+
+    /**
+     * @dev See {IERC721Metadata-tokenURI}.
+     */
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
+        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+
+        return _tokenURI;
     }
 
     /**

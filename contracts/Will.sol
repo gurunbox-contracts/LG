@@ -3,10 +3,10 @@
 pragma solidity ^0.8.0;
 
 import { IWill } from "./interfaces/IWill.sol";
-import { Ownable } from './@OpenZeppelin/contracts/access/Ownable.sol';
-import { IERC20 } from './@OpenZeppelin/contracts/token/ERC20/IERC20.sol';
-import { IERC721 } from './@OpenZeppelin/contracts/token/ERC721/IERC721.sol';
+import { IERC20 } from './interfaces/IERC20.sol';
+import { IERC721 } from './interfaces/IERC721.sol';
 import { IOracle } from './interfaces/IOracle.sol';
+import { Ownable } from './utils/Ownable.sol';
 
 contract Will is IWill, Ownable {
     address public override receiver;
