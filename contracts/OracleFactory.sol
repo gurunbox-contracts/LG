@@ -37,7 +37,7 @@ contract OracleFactory is ERC721, IOracleFactory {
     constructor() ERC721("Alert NFT", "ALERT") {
         _mint(msg.sender, _tokenIdTracker.current());
         _tokenIdTracker.increment();
-     }
+    }
 
     function createOracle(
         string memory name_, 

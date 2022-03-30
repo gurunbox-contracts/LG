@@ -64,15 +64,35 @@ describe("OracleFactory", function() {
         expect(await oracleFactory.getApproved(0)).to.equal(constants.AddressZero);
     })
 
-
+    it("Should return isApprovedForAll", async function() {
+        expect(await oracleFactory.isApprovedForAll(deployer.address, constants.AddressZero)).to.be.false;
+    })
 
     it("Should revert approve", async function() {
-        await expect(oracleFactory.approve(constants.AddressZero, 0))
+        await expect(oracleFactory.connect(deployer).approve(constants.AddressZero, 0))
             .to.be.revertedWith("NTT");
     })
 
+    it("Should revert setApprovalForAll", async function() {
+        await expect(oracleFactory.connect(deployer).setApprovalForAll(constants.AddressZero, true))
+            .to.be.revertedWith("NTT");
+    })
 
+    it("Should revert transferFrom", async function() {
+        await expect(oracleFactory.connect(deployer).transferFrom(deployer.address, receiver0.address, 0))
+            .to.be.revertedWith("NTT");
+    })
 
+    // safeTransferFromはoverloadされているので、ether.jsでSignしてから使う必要があるらしい。
+    // https://stackoverflow.com/questions/68289806/no-safetransferfrom-function-in-ethers-js-contract-instance
+    // it("Should revert safeTransferFrom", async function() {
+    //     const data = "0x00";
+    //     await expect(oracleFactory.connect(deployer).safeTransferFrom(deployer.address, receiver0.address, 0))
+    //         .to.be.revertedWith("NTT");
+        
+    //     await expect(oracleFactory.connect(deployer).safeTransferFrom(deployer.address, receiver0.address, 0, data))
+    //         .to.be.revertedWith("NTT");
+    // })
 
     it("Should create Oracle", async function() {
         expect(await oracleFactory.connect(owner).createOracle(
