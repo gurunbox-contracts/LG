@@ -1,4 +1,7 @@
-# Will Smart Contract Project
+# Little Guardians Smart Contract Project
+
+## Structure
+![](structure.drawio.svg)
 
 Initiate and Install hardhat
 
