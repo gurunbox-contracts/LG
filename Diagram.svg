@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+
+<!-- Page 2 -->
+<svg x="0" y="0" width="1466" height="825" viewBox="0 0 1466 825" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+style="display: block;margin-left: auto;margin-right: auto;">
+<defs>
+<clipPath id="c_2"><path d="M0,0H1466V825H0Z"/></clipPath>
+<clipPath id="c0_2"><path d="M0,825V0H1466.3V825Z"/></clipPath>
+<clipPath id="c1_2"><path d="M352.2,268.4v-124H468.8v124Z"/></clipPath>
+<clipPath id="c2_2"><path d="M76.8,270.9v-159h102v159Z"/></clipPath>
+<clipPath id="c3_2"><path d="M36.2,508.4V414.8h93.6v93.6Z"/></clipPath>
+
+<style type="text/css"><![CDATA[
+text { white-space: pre; }
+path, image { pointer-events: none; }
+
+.s1_2{
+font-size: 53.92px;
+font-family: MS-PMincho_6d;
+fill: #000;
+stroke: #000;
+stroke-width: 1.3;
+}
+.s2_2{
+font-size: 36.67px;
+font-family: MS-PMincho_6g;
+fill: #000;
+}
+.s3_2{
+font-size: 27.50px;
+font-family: YuGothic-Regular_6j;
+fill: #000;
+}
+.s4_2{
+font-size: 18.33px;
+font-family: YuGothic-Regular_6m;
+fill: #898989;
+}
+
+.g0_2{
+fill: #FFFFFF;
+}
+.g1_2{
+}
+.g2_2{
+fill: none;
+stroke: #000000;
+stroke-width: 1.527;
+stroke-linecap: butt;
+stroke-linejoin: miter;
+stroke-miterlimit: 8;
+}
+.g3_2{
+fill: #FFE699;
+}
+
+]]></style>
+
+</defs>
+<path d="M0,0
+L0,825
+L1466,825
+L1466,0 Z " 
+fill="#FFFFFF" stroke="none"/>
+<g clip-path="url(#c_2)">
+<path clip-path="url(#c0_2)" d="M0,0H1466.3V825H0Z" class="g0_2"/>
+<image x="0" y="0" width="1467" height="825" xlink:href="2/shade/1.png"/>
+<image preserveAspectRatio="none" x="709" y="587" width="111" height="110" xlink:href="2/img/1.png"/>
+<image preserveAspectRatio="none" x="145" y="248" width="261" height="261" xlink:href="2/img/2.png"/>
+<image preserveAspectRatio="none" x="1109" y="248" width="264" height="265" xlink:href="2/img/3.png"/>
+<text transform="matrix(1.02,0,0,1,192.7,577.2)" dx="0,.2,.2" class="s1_2">保有者 </text>
+<path fill-rule="evenodd" d="M549.6,535H987.4V519l32,32l-32,32V567H549.6Z" class="g1_2"/>
+<path d="M549.6,535H987.4V519l32,32l-32,32V567H549.6Z" class="g2_2"/>
+<image clip-path="url(#c1_2)" preserveAspectRatio="none" x="291" y="144" width="236" height="124" xlink:href="2/img/4.png"/>
+<image clip-path="url(#c2_2)" preserveAspectRatio="none" x="-29" y="74" width="331" height="231" xlink:href="2/img/5.png"/>
+<image clip-path="url(#c3_2)" preserveAspectRatio="none" x="36" y="415" width="94" height="93" xlink:href="2/img/6.jpg"/>
+<text transform="matrix(1.02,0,0,1,1157.4,573.6)" dx="0,.2,.2" class="s1_2">受取人 </text>
+<text transform="matrix(1.02,0,0,1,680.6,761.3)" dx="0,.2,.2" class="s1_2">判定者 </text>
+<path fill-rule="evenodd" d="M597.9,378.1c0,-10.1,8.2,-18.3,18.4,-18.3H934.7c10.1,0,18.3,8.2,18.3,18.3v73.4c0,10.1,-8.2,18.3,-18.3,18.3H616.3c-10.2,0,-18.4,-8.2,-18.4,-18.3Z" class="g3_2"/>
+<path d="M597.9,378.1c0,-10.1,8.2,-18.3,18.4,-18.3H934.7c10.1,0,18.3,8.2,18.3,18.3v73.4c0,10.1,-8.2,18.3,-18.3,18.3H616.3c-10.2,0,-18.4,-8.2,-18.4,-18.3Z" class="g2_2"/>
+<text x="634.5" y="430.8" dx="0,.1,.1,0,-.1,0,.1,-.1,0,0" class="s2_2">スマートコントラクト </text>
+<text x="236.5" y="637.6" dx="0,0,0,.1,-.1" class="s3_2">owner </text>
+<text x="722.9" y="812.2" dx="0,.1,-.1,.1,0,.1,-.1,-.1" class="s3_2">trustees </text>
+<text x="1190.3" y="638.7" dx="0,-.1,-.1,-.1,-.1,.1,-.1,-.1" class="s3_2">receiver </text>
+<text x="1344.6" y="792.4" class="s4_2">1 </text>
+<image preserveAspectRatio="none" x="630" y="28" width="313" height="312" xlink:href="2/img/7.png"/>
+
+</g>
+
+<!-- Any embedded fonts defined here -->
+<style type="text/css" ><![CDATA[
+
+@font-face {
+	font-family: MS-PMincho_6d;
+	src: url("fonts/MS-PMincho_6d.woff") format("woff");
+}
+
+@font-face {
+	font-family: MS-PMincho_6g;
+	src: url("fonts/MS-PMincho_6g.woff") format("woff");
+}
+
+@font-face {
+	font-family: YuGothic-Regular_6j;
+	src: url("fonts/YuGothic-Regular_6j.woff") format("woff");
+}
+
+@font-face {
+	font-family: YuGothic-Regular_6m;
+	src: url("fonts/YuGothic-Regular_6m.woff") format("woff");
+}
+
+]]></style>
+
+</svg>
