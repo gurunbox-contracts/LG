@@ -30,7 +30,7 @@ export async function oracleFixture(
         receiver.address,
         gracePeriod
         );
-    const oracleAddress: string = await oracleFactory.getOracles(0);
+    const oracleAddress: string = await oracleFactory.getOracle(0);
     const oracle: Contract = await ethers.getContractAt("Oracle", oracleAddress);
     const willAddress: string = await oracle.getWills(0);
     const will: Contract = await ethers.getContractAt("Will", willAddress);

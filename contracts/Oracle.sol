@@ -7,10 +7,12 @@ import { IWill } from './interfaces/IWill.sol';
 import { Will } from './Will.sol';
 import { Ownable } from './utils/Ownable.sol';
 import { Create2 } from './utils/Create2.sol';
+import { IOracleFactory } from './interfaces/IOracleFactory.sol';
 
 contract Oracle is IOracle, Ownable {
     string private _proposition;
-    uint256 private nextWillId = 0;
+    uint256 private nextWillId;
+    uint256 private tokenId;
     address[] private ZERO_ARRAY = new address[](0);
     
     address public override oracleFactory;
@@ -82,9 +84,15 @@ contract Oracle is IOracle, Ownable {
         TF ? conditionCounter++ : conditionCounter--;
         trusteeOpinion[trusteeId] = TF;
 
+        uint256 _oracleId = IOracleFactory(oracleFactory).getOracleId(address(this));
         if (conditionCounter == numerator && TF) {
             fulfillmentTime = block.timestamp;
-        }
+
+            tokenId = IOracleFactory(oracleFactory).mint(owner(), _oracleId);
+
+        } else if (conditionCounter == (numerator - 1) && !TF) {
+            IOracleFactory(oracleFactory).burn(tokenId, _oracleId);
+        }   
         
         emit Judged(trustees[trusteeId], TF);
     }

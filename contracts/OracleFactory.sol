@@ -3,13 +3,14 @@
 pragma solidity ^0.8.0;
 
 import { ERC721 } from './@OpenZeppelin/contracts/token/ERC721/ERC721.sol';
+import { Ownable } from './@OpenZeppelin/contracts/access/Ownable.sol';
 import { IOracleFactory } from './interfaces/IOracleFactory.sol';
 import { IOracle } from './interfaces/IOracle.sol'; 
 import { Oracle } from './Oracle.sol';
 import { Counters } from './utils/Counters.sol';
 import { Create2 } from './utils/Create2.sol';
 
-contract OracleFactory is ERC721, IOracleFactory {
+contract OracleFactory is ERC721, Ownable, IOracleFactory {
     using Counters for Counters.Counter;
 
     Counters.Counter private _tokenIdTracker;
@@ -19,7 +20,10 @@ contract OracleFactory is ERC721, IOracleFactory {
     bool private constant transferable = false; 
 
     // Mapping from oracleId to Oracle address
-    mapping(uint256 => address) public override getOracles;
+    mapping(uint256 => address) public override getOracle;
+
+    // Mapping from Oracle address to oracleId
+    mapping(address => uint256) public override getOracleId;
 
     // Mapping from token ID to owner address
     mapping(uint256 => address) private _owners;
@@ -52,28 +56,30 @@ contract OracleFactory is ERC721, IOracleFactory {
         oracle = Create2.deploy(0, salt, bytecode);
 
         IOracle(oracle).initialize(name_, _owner, _trustees, _numerator, _receiver, _gracePeriod);
-        getOracles[nextOracleId] = oracle;
+        getOracle[nextOracleId] = oracle;
+        getOracleId[oracle] = nextOracleId;
         nextOracleId++;
 
         emit OracleCreated(oracle, nextOracleId - 1, name_, _owner);
     }
 
-    function mint(address to, uint256 oracleId) public {
-        require(msg.sender == getOracles[oracleId], "OracleFactory: caller is not oracle");
+    function mint(address to, uint256 oracleId) external override returns (uint256 tokenId) {
+        require(msg.sender == getOracle[oracleId], "OracleFactory: caller is not oracle");
 
         // We cannot just use balanceOf to create the new tokenId because tokens
         // can be burned (destroyed), so we need a separate counter.
-        _mint(to, _tokenIdTracker.current());
+        tokenId = _tokenIdTracker.current();
+        _mint(to, tokenId);
         _tokenIdTracker.increment();
     }
 
-    function burn(uint256 tokenId, uint256 oracleId) public {
-        require(msg.sender == getOracles[oracleId], "OracleFactory: caller is not oracle");
+    function burn(uint256 tokenId, uint256 oracleId) external override {
+        require(msg.sender == getOracle[oracleId], "OracleFactory: caller is not oracle");
 
         _burn(tokenId);
     }
 
-    function setTokenURI(string memory uri) public {
+    function setTokenURI(string memory uri) external override onlyOwner {
         _tokenURI = uri;
     }
 

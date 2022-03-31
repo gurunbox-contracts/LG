@@ -60,6 +60,16 @@ describe("OracleFactory", function() {
         expect(await oracleFactory.tokenURI(0)).to.equal("https://example.com/");
     })
 
+    it("Should setTokenURI by deployer", async function() {
+        await oracleFactory.connect(deployer).setTokenURI("https://example.com/anotherURI/");
+        expect(await oracleFactory.tokenURI(0)).to.equal("https://example.com/anotherURI/");
+    })
+
+    it("Should revert setTokenURI by other than deployer", async function() {
+        await expect(oracleFactory.connect(owner).setTokenURI("https://example.com/anotherURI/"))
+            .to.be.revertedWith("Ownable: caller is not the owner");
+    })
+
     it("Should return getApproved of tokenId 0", async function() {
         expect(await oracleFactory.getApproved(0)).to.equal(constants.AddressZero);
     })
@@ -105,13 +115,13 @@ describe("OracleFactory", function() {
             ))
             .to.emit(oracleFactory, "OracleCreated")
             .withArgs(
-                await oracleFactory.getOracles(0),
+                await oracleFactory.getOracle(0),
                 0,
                 "Test",
                 owner.address,
             );
         
-        let oracleAddress = await oracleFactory.getOracles(0);
+        let oracleAddress = await oracleFactory.getOracle(0);
         let oracle = await ethers.getContractAt("Oracle", oracleAddress);
 
         expect(await oracle.proposition()).to.equal("Test");
