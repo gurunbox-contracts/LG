@@ -108,9 +108,9 @@ describe("OracleFactory", function() {
         expect(await oracleFactory.connect(owner).createOracle(
             "Test", 
             owner.address, 
+            receiver0.address,
             trustees, 
             1, 
-            receiver0.address,
             gracePeriod
             ))
             .to.emit(oracleFactory, "OracleCreated")
@@ -126,32 +126,28 @@ describe("OracleFactory", function() {
 
         expect(await oracle.proposition()).to.equal("Test");
         expect(await oracle.owner()).to.equal(owner.address);
+        expect(await oracle.receiver()).to.equal(receiver0.address);
         expect(await oracle.trustees(0)).to.equal(trustee0.address);
         expect(await oracle.trustees(1)).to.equal(trustee1.address);
         expect(await oracle.numerator()).to.equal(1);
-
-        let willAddress = await oracle.getWills(0);
-        let will = await ethers.getContractAt("Will", willAddress);
-
-        expect(await will.receiver()).to.equal(receiver0.address);
     })
 
     it("Should revert create same Oracle", async function() {
         await oracleFactory.connect(owner).createOracle(
             "Test", 
             owner.address, 
+            receiver0.address, 
             trustees, 
-            1, 
-            receiver0.address,
+            1,
             gracePeriod
             );
         
         await expect(oracleFactory.connect(owner).createOracle(
             "Test", 
-            owner.address, 
-            trustees, 
-            1, 
+            owner.address,  
             receiver0.address,
+            trustees, 
+            1,
             gracePeriod
             )).to.be.revertedWith("Create2: Failed on deploy");
     })
