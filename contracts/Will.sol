@@ -49,18 +49,6 @@ contract Will is IWill, Ownable {
         emit TransferReceiver(preReceiver, receiver);
     }
 
-    function claimETH(address payable to, uint256 value) external override {
-        require(receiver == msg.sender, "Vault: Not receiver");
-        require(condition(), "Vault: Condition not met");
-        require(block.timestamp >= IOracle(oracle).fulfillmentTime() + gracePeriod, "Vault: Grace period not over");
-
-        // To receive Ether since the address of To is payable
-        (bool success, ) = to.call{value: value}("");
-        require(success, "Failed to send Ether");
-
-        emit TransferETH(address(this), to, value);
-    }
-
     function claim20(address[] calldata tokens, address to, uint256[] calldata amounts) external override {
         require(receiver == msg.sender, "Vault: Not receiver");
         require(condition(), "Vault: Condition not met");
