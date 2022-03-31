@@ -15,9 +15,9 @@ interface IOracleFactory {
     function createOracle(
         string memory name_, 
         address _owner, 
+        address _receiver, 
         address[] memory _trustees, 
         uint256 _numerator,
-        address _receiver, 
         uint256 _gracePeriod
     ) external returns (address oracle);
 }

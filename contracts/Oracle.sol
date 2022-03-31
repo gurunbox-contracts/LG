@@ -3,25 +3,26 @@
 pragma solidity ^0.8.0;
 
 import { IOracle } from "./interfaces/IOracle.sol";
-import { IWill } from './interfaces/IWill.sol';
-import { Will } from './Will.sol';
 import { Ownable } from './utils/Ownable.sol';
 import { Create2 } from './utils/Create2.sol';
 import { IOracleFactory } from './interfaces/IOracleFactory.sol';
+import { IERC20 } from './interfaces/IERC20.sol';
+import { IERC721 } from './interfaces/IERC721.sol';
 
 contract Oracle is IOracle, Ownable {
     string private _proposition;
-    uint256 private nextWillId;
-    uint256 private tokenId;
+    uint256 private _alertTokenId;
     address[] private ZERO_ARRAY = new address[](0);
     
     address public override oracleFactory;
+    address public override receiver;
     address[] public override trustees;
     uint256 public override numerator;
+    uint256 public override gracePeriod;
     uint256 public override conditionCounter;
     uint256 public override fulfillmentTime;
     
-    mapping(uint256 => address) public override getWills;
+    // Mapping from trusteeId to trustee's condition
     mapping(uint256 => bool) public override trusteeOpinion;
     
     constructor() {
@@ -32,18 +33,18 @@ contract Oracle is IOracle, Ownable {
     function initialize(
         string memory proposition_, 
         address _owner, 
+        address _receiver,
         address[] memory _trustees, 
         uint256 _numerator,
-        address _receiver, 
         uint256 _gracePeriod
     ) external override {
         require(msg.sender == oracleFactory, "Will: FORBIDDEN");
         _proposition = proposition_;
         transferOwnership(_owner);
+        receiver = _receiver;
         trustees = _trustees;
         numerator = _numerator;
-
-        _createWill(_receiver, _gracePeriod);
+        gracePeriod = _gracePeriod;
     }
 
     function condition() external view override returns (bool) {
@@ -58,18 +59,18 @@ contract Oracle is IOracle, Ownable {
         return trustees.length;
     }
 
-    function willNumber() public view override returns (uint256) {
-        return nextWillId;
+    function changeReceiver(address _receiver) external override onlyOwner {
+        receiver = _receiver;
     }
 
-    function getReceivers(uint256 willId) public view override returns (address) {
-        return IWill(getWills[willId]).receiver();
-    }
-
-    function setTrustees(address[] memory newTrustees, uint256 _numerator) external virtual override onlyOwner {
+    function changeTrustees(address[] memory newTrustees, uint256 _numerator) external virtual override onlyOwner {
         require(_numerator <= newTrustees.length, "Oracle: Numerator must be less than or equal to denominator");
         trustees = newTrustees;
         numerator = _numerator;
+    }
+
+    function changeGracePeriod(uint256 _gracePeriod) external override onlyOwner {
+        gracePeriod = _gracePeriod;
     }
 
     /** 
@@ -88,31 +89,32 @@ contract Oracle is IOracle, Ownable {
         if (conditionCounter == numerator && TF) {
             fulfillmentTime = block.timestamp;
 
-            tokenId = IOracleFactory(oracleFactory).mint(owner(), _oracleId);
+            _alertTokenId = IOracleFactory(oracleFactory).mint(owner(), _oracleId);
 
         } else if (conditionCounter == (numerator - 1) && !TF) {
-            IOracleFactory(oracleFactory).burn(tokenId, _oracleId);
+            IOracleFactory(oracleFactory).burn(_alertTokenId, _oracleId);
         }   
         
         emit Judged(trustees[trusteeId], TF);
     }
-    
-    function createWill(address receiver, uint256 _gracePeriod) external override onlyOwner returns (address will) {
-        will = _createWill(receiver, _gracePeriod);
+
+    function claim20(address[] calldata tokens, address to, uint256[] calldata amounts) external override {
+        require(receiver == msg.sender, "Vault: Not receiver");
+        require(conditionCounter >= numerator, "Vault: Condition not met");
+        require(block.timestamp >= fulfillmentTime + gracePeriod, "Vault: Grace period not over");
+
+        for (uint i = 0; i < tokens.length; i++) {
+            IERC20(tokens[i]).transferFrom(owner(), to, amounts[i]);
+        }
     }
 
-    function _createWill(address _receiver, uint256 _gracePeriod) internal returns (address _will) {
-        require(_receiver != address(0), 'WillFactory: RECEIVER_ZERO_ADDRESS');
-        
-        bytes memory bytecode = type(Will).creationCode;
-        bytes32 salt = keccak256(abi.encodePacked(owner(), _receiver, nextWillId));
-        _will = Create2.deploy(0, salt, bytecode);
+    function claim721(address[] calldata tokens, address to, uint256[] calldata tokenIds) external override {
+        require(receiver == msg.sender, "Vault: Not receiver");
+        require(conditionCounter >= numerator, "Vault: Condition not met");
+        require(block.timestamp >= fulfillmentTime + gracePeriod, "Vault: Grace period not over");
 
-        IWill(_will).initialize(owner(), _receiver, nextWillId, _gracePeriod);
-
-        getWills[nextWillId] = _will;
-        nextWillId++;
-        
-        emit WillCreated(owner(), _receiver, _will, nextWillId - 1);
+        for (uint i = 0; i < tokens.length; i++) {
+            IERC721(tokens[i]).transferFrom(owner(), to, tokenIds[i]);
+        }
     }
 }

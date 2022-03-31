@@ -3,7 +3,7 @@
 pragma solidity ^0.8.0;
 
 import { ERC721 } from './@OpenZeppelin/contracts/token/ERC721/ERC721.sol';
-import { Ownable } from './@OpenZeppelin/contracts/access/Ownable.sol';
+import { Ownable } from './utils/Ownable.sol';
 import { IOracleFactory } from './interfaces/IOracleFactory.sol';
 import { IOracle } from './interfaces/IOracle.sol'; 
 import { Oracle } from './Oracle.sol';
@@ -46,16 +46,16 @@ contract OracleFactory is ERC721, Ownable, IOracleFactory {
     function createOracle(
         string memory name_, 
         address _owner, 
+        address _receiver, 
         address[] memory _trustees, 
         uint256 _numerator,
-        address _receiver, 
         uint256 _gracePeriod
     ) external override returns (address oracle) {
         bytes memory bytecode = type(Oracle).creationCode;
         bytes32 salt = keccak256(abi.encodePacked(name_, _owner));
         oracle = Create2.deploy(0, salt, bytecode);
 
-        IOracle(oracle).initialize(name_, _owner, _trustees, _numerator, _receiver, _gracePeriod);
+        IOracle(oracle).initialize(name_, _owner, _receiver, _trustees, _numerator, _gracePeriod);
         getOracle[nextOracleId] = oracle;
         getOracleId[oracle] = nextOracleId;
         nextOracleId++;
