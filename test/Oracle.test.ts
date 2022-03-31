@@ -53,6 +53,11 @@ describe("Oracle", function() {
         oracle = fixture.oracle;
     })
 
+    it("Should return the default value", async function() {
+        expect(await oracle.oracleFactory()).to.equal(oracleFactory.address);
+        expect(await oracle.fulfillmentTime()).to.equal(0);
+    })
+
     it("Should return the initialized values", async function() {
         expect(await oracle.proposition()).to.equal("Test");
 
@@ -81,128 +86,158 @@ describe("Oracle", function() {
         expect(await oracle.condition()).to.equal(false);
     })
 
-    it("Should change trustees from owner", async function() {
-        const newTrustees: string[] = [alice.address, bob.address];
-        trustees = [
-            trustee0.address,
-            trustee1.address,
-            trustee2.address,
-            trustee3.address,
-            trustee4.address,
-        ]; 
-        await oracle.connect(owner).changeTrustees(newTrustees, 1)
+    describe("changeReceiver()", () => {
+        it("Should change receiver when called by owner", async function() {
+            await oracle.connect(owner).changeReceiver(alice.address);
+            expect(await oracle.receiver()).to.equal(alice.address);
+        })
 
-        expect(await oracle.trustees(0)).to.equal(alice.address);
-        expect(await oracle.trustees(1)).to.equal(bob.address);
-
-        expect(await oracle.trusteesLength()).to.equal(2);
-        expect(await oracle.numerator()).to.equal(1);
+        it("Should revert when called by other than owner", async function() {
+            await expect(oracle.connect(alice).changeReceiver(alice.address))
+                .to.be.revertedWith("Ownable: caller is not the owner");
+        })
     })
 
-    it("Should revert set trustees from other than owner", async function() {
-        await expect(oracle.connect(alice).changeTrustees(trustees, 3))
-            .to.be.revertedWith("Ownable: caller is not the owner");
+    describe("changeTrustees()", () => {
+        it("Should change trustees when called by owner", async function() {
+            const newTrustees: string[] = [alice.address, bob.address];
+            trustees = [
+                trustee0.address,
+                trustee1.address,
+                trustee2.address,
+                trustee3.address,
+                trustee4.address,
+            ]; 
+            await oracle.connect(owner).changeTrustees(newTrustees, 1)
+    
+            expect(await oracle.trustees(0)).to.equal(alice.address);
+            expect(await oracle.trustees(1)).to.equal(bob.address);
+    
+            expect(await oracle.trusteesLength()).to.equal(2);
+            expect(await oracle.numerator()).to.equal(1);
+        })
+
+        it("Should revert when called by other than owner", async function() {
+            await expect(oracle.connect(alice).changeTrustees(trustees, 3))
+                .to.be.revertedWith("Ownable: caller is not the owner");
+        })
+
+        it("Should revert when numerator is larger than the number of trustees", async function() {
+            await expect(oracle.connect(owner).changeTrustees(trustees, 6))
+                .to.be.revertedWith("Oracle: Numerator must be less than or equal to denominator");
+        })
     })
 
-    it("Should revert set trustees by numerator larger than number of trustees", async function() {
-        await expect(oracle.connect(owner).changeTrustees(trustees, 6))
-            .to.be.revertedWith("Oracle: Numerator must be less than or equal to denominator");
+    describe("changeGracePeriod()", () => {
+        const newGracePeriod = BigNumber.from(200);
+
+        it("Should change grace period when called by owner", async function() {
+            await oracle.connect(owner).changeGracePeriod(newGracePeriod);
+            expect(await oracle.gracePeriod()).to.equal(newGracePeriod);
+        })
+
+        it("Should revert when called by other than owner", async function() {
+            await expect(oracle.connect(alice).changeGracePeriod(gracePeriod))
+                .to.be.revertedWith("Ownable: caller is not the owner");
+        })
     })
 
-    it("Should judge from trustees and return correct condition", async function() {
-        await expect(oracle.connect(trustee0).judge(true, 0))
-            .to.emit(oracle, "Judged")
-            .withArgs(trustee0.address, true);
-        expect(await oracle.conditionCounter()).to.equal(1);
-        expect(await oracle.condition()).to.equal(false);
+    describe("judge()", () => {
+        it("Should judge and return correct condition when called by owner", async function() {
+            await expect(oracle.connect(trustee0).judge(true, 0))
+                .to.emit(oracle, "Judged")
+                .withArgs(trustee0.address, true);
+            expect(await oracle.conditionCounter()).to.equal(1);
+            expect(await oracle.condition()).to.equal(false);
+    
+            await oracle.connect(trustee1).judge(true, 1);
+            expect(await oracle.conditionCounter()).to.equal(2);
+            expect(await oracle.condition()).to.equal(false);
+    
+            await expect(oracle.connect(trustee2).judge(true, 2))
+                .to.emit(oracleFactory, "Transfer")
+                .withArgs(constants.AddressZero, owner.address, 1);
+            expect(await oracle.conditionCounter()).to.equal(3);
+            expect(await oracle.condition()).to.equal(true);
+    
+            await oracle.connect(trustee3).judge(true, 3);
+            expect(await oracle.conditionCounter()).to.equal(4);
+            expect(await oracle.condition()).to.equal(true);
+    
+            await oracle.connect(trustee2).judge(true, 4);
+            expect(await oracle.conditionCounter()).to.equal(5);
+            expect(await oracle.condition()).to.equal(true);
+    
+            await oracle.connect(trustee2).judge(false, 2);
+            expect(await oracle.conditionCounter()).to.equal(4);
+            expect(await oracle.condition()).to.equal(true);
+    
+            await oracle.connect(trustee2).judge(false, 4);
+            expect(await oracle.conditionCounter()).to.equal(3);
+            expect(await oracle.condition()).to.equal(true);
+    
+            await expect(oracle.connect(trustee0).judge(false, 0))
+                .to.emit(oracleFactory, "Transfer")
+                .withArgs(owner.address, constants.AddressZero, 1);
+            expect(await oracle.conditionCounter()).to.equal(2);
+            expect(await oracle.condition()).to.equal(false);
+        })
 
-        await oracle.connect(trustee1).judge(true, 1);
-        expect(await oracle.conditionCounter()).to.equal(2);
-        expect(await oracle.condition()).to.equal(false);
+        it("Should revert when trusteeIds and trustee address are not match", async function() {
+            await expect(oracle.connect(alice).judge(true, 0))
+                .to.be.revertedWith("Oracle: Not a trustee");
+            
+            await expect(oracle.connect(trustee1).judge(true, 0))
+                .to.be.revertedWith("Oracle: Not a trustee");
+            
+            await expect(oracle.connect(owner).judge(true, 0))
+                .to.be.revertedWith("Oracle: Not a trustee");
+        })
 
-        await expect(oracle.connect(trustee2).judge(true, 2))
-            .to.emit(oracleFactory, "Transfer")
-            .withArgs(constants.AddressZero, owner.address, 1);
-        expect(await oracle.conditionCounter()).to.equal(3);
-        expect(await oracle.condition()).to.equal(true);
+        it("Should revert when opinion is same", async function() {
+            await expect(oracle.connect(trustee0).judge(false, 0))
+                .to.be.revertedWith("Oracle: The opinion you're trying to send has already been sent");
+            
+            await expect(oracle.connect(trustee0).judge(true, 0))
+                .to.emit(oracle, "Judged")
+                .withArgs(trustee0.address, true);
+            
+            await expect(oracle.connect(trustee0).judge(true, 0))
+                .to.be.revertedWith("Oracle: The opinion you're trying to send has already been sent");
+        })
 
-        await oracle.connect(trustee3).judge(true, 3);
-        expect(await oracle.conditionCounter()).to.equal(4);
-        expect(await oracle.condition()).to.equal(true);
-
-        await oracle.connect(trustee2).judge(true, 4);
-        expect(await oracle.conditionCounter()).to.equal(5);
-        expect(await oracle.condition()).to.equal(true);
-
-        await oracle.connect(trustee2).judge(false, 2);
-        expect(await oracle.conditionCounter()).to.equal(4);
-        expect(await oracle.condition()).to.equal(true);
-
-        await oracle.connect(trustee2).judge(false, 4);
-        expect(await oracle.conditionCounter()).to.equal(3);
-        expect(await oracle.condition()).to.equal(true);
-
-        await expect(oracle.connect(trustee0).judge(false, 0))
-            .to.emit(oracleFactory, "Transfer")
-            .withArgs(owner.address, constants.AddressZero, 1);
-        expect(await oracle.conditionCounter()).to.equal(2);
-        expect(await oracle.condition()).to.equal(false);
-    })
-
-    it("Should revert judge from another address or another trusteeId", async function() {
-        await expect(oracle.connect(alice).judge(true, 0))
-            .to.be.revertedWith("Oracle: Not a trustee");
-        
-        await expect(oracle.connect(trustee1).judge(true, 0))
-            .to.be.revertedWith("Oracle: Not a trustee");
-        
-        await expect(oracle.connect(owner).judge(true, 0))
-            .to.be.revertedWith("Oracle: Not a trustee");
-    })
-
-    it("Should revert judge by same opinion", async function() {
-        await expect(oracle.connect(trustee0).judge(false, 0))
-            .to.be.revertedWith("Oracle: The opinion you're trying to send has already been sent");
-        
-        await expect(oracle.connect(trustee0).judge(true, 0))
-            .to.emit(oracle, "Judged")
-            .withArgs(trustee0.address, true);
-        
-        await expect(oracle.connect(trustee0).judge(true, 0))
-            .to.be.revertedWith("Oracle: The opinion you're trying to send has already been sent");
-    })
-
-    it("Should return fulfillment time when condition counter reachs numerator", async function() {
-        expect(await oracle.fulfillmentTime()).to.equal(0);
-
-        await oracle.connect(trustee0).judge(true, 0);
-        await oracle.connect(trustee1).judge(true, 1);
-        await expect(oracle.connect(trustee2).judge(true, 2))
-            .to.emit(oracleFactory, "Transfer")
-            .withArgs(constants.AddressZero, owner.address, 1);
-        let latestBlock = await ethers.provider.getBlock("latest");
-        expect(await oracle.fulfillmentTime()).to.equal(BigNumber.from(latestBlock.timestamp));
-
-        await expect(oracle.connect(trustee1).judge(false, 1))
-            .to.emit(oracleFactory, "Transfer")
-            .withArgs(owner.address, constants.AddressZero, 1);
-        await expect(oracle.connect(trustee3).judge(true, 3))
-            .to.emit(oracleFactory, "Transfer")
-            .withArgs(constants.AddressZero, owner.address, 2);
-        latestBlock = await ethers.provider.getBlock("latest");
-        expect(await oracle.fulfillmentTime()).to.equal(BigNumber.from(latestBlock.timestamp));
-    })
-
-    it("Should not return fulfillment time when other than just fulfillment", async function() {
-        await oracle.connect(trustee0).judge(true, 0);
-        await oracle.connect(trustee1).judge(true, 1);
-        await oracle.connect(trustee2).judge(true, 2);
-        await oracle.connect(trustee3).judge(true, 3);
-        let latestBlock = await ethers.provider.getBlock("latest");
-        expect(await oracle.fulfillmentTime()).to.not.equal(BigNumber.from(latestBlock.timestamp));
-
-        await oracle.connect(trustee1).judge(false, 1);
-        latestBlock = await ethers.provider.getBlock("latest");
-        expect(await oracle.fulfillmentTime()).to.not.equal(BigNumber.from(latestBlock.timestamp));
+        it("Should return fulfillment time when condition counter reachs numerator", async function() {
+            expect(await oracle.fulfillmentTime()).to.equal(0);
+    
+            await oracle.connect(trustee0).judge(true, 0);
+            await oracle.connect(trustee1).judge(true, 1);
+            await expect(oracle.connect(trustee2).judge(true, 2))
+                .to.emit(oracleFactory, "Transfer")
+                .withArgs(constants.AddressZero, owner.address, 1);
+            let latestBlock = await ethers.provider.getBlock("latest");
+            expect(await oracle.fulfillmentTime()).to.equal(BigNumber.from(latestBlock.timestamp));
+    
+            await expect(oracle.connect(trustee1).judge(false, 1))
+                .to.emit(oracleFactory, "Transfer")
+                .withArgs(owner.address, constants.AddressZero, 1);
+            await expect(oracle.connect(trustee3).judge(true, 3))
+                .to.emit(oracleFactory, "Transfer")
+                .withArgs(constants.AddressZero, owner.address, 2);
+            latestBlock = await ethers.provider.getBlock("latest");
+            expect(await oracle.fulfillmentTime()).to.equal(BigNumber.from(latestBlock.timestamp));
+        })
+    
+        it("Should not return fulfillment time other than just when condition counter reachs numerator", async function() {
+            await oracle.connect(trustee0).judge(true, 0);
+            await oracle.connect(trustee1).judge(true, 1);
+            await oracle.connect(trustee2).judge(true, 2);
+            await oracle.connect(trustee3).judge(true, 3);
+            let latestBlock = await ethers.provider.getBlock("latest");
+            expect(await oracle.fulfillmentTime()).to.not.equal(BigNumber.from(latestBlock.timestamp));
+    
+            await oracle.connect(trustee1).judge(false, 1);
+            latestBlock = await ethers.provider.getBlock("latest");
+            expect(await oracle.fulfillmentTime()).to.not.equal(BigNumber.from(latestBlock.timestamp));
+        })
     })
 })

@@ -12,7 +12,6 @@ import { IERC721 } from './interfaces/IERC721.sol';
 contract Oracle is IOracle, Ownable {
     string private _proposition;
     uint256 private _alertTokenId;
-    address[] private ZERO_ARRAY = new address[](0);
     
     address public override oracleFactory;
     address public override receiver;
