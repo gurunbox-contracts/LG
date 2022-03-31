@@ -6,6 +6,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { oracleFixture } from "./shared/fixtures";
 
 describe("Oracle", function() {
+    let oracleFactory: Contract;
     let oracle: Contract;
     let will0: Contract;
     let owner: SignerWithAddress;
@@ -49,6 +50,7 @@ describe("Oracle", function() {
             receiver0,
             gracePeriod
         );
+        oracleFactory = fixture.oracleFactory;
         oracle = fixture.oracle;
         will0 = fixture.will;
     })
@@ -120,7 +122,9 @@ describe("Oracle", function() {
         expect(await oracle.conditionCounter()).to.equal(2);
         expect(await oracle.condition()).to.equal(false);
 
-        await oracle.connect(trustee2).judge(true, 2);
+        await expect(oracle.connect(trustee2).judge(true, 2))
+            .to.emit(oracleFactory, "Transfer")
+            .withArgs(constants.AddressZero, owner.address, 1);
         expect(await oracle.conditionCounter()).to.equal(3);
         expect(await oracle.condition()).to.equal(true);
 
@@ -140,7 +144,9 @@ describe("Oracle", function() {
         expect(await oracle.conditionCounter()).to.equal(3);
         expect(await oracle.condition()).to.equal(true);
 
-        await oracle.connect(trustee0).judge(false, 0);
+        await expect(oracle.connect(trustee0).judge(false, 0))
+            .to.emit(oracleFactory, "Transfer")
+            .withArgs(owner.address, constants.AddressZero, 1);
         expect(await oracle.conditionCounter()).to.equal(2);
         expect(await oracle.condition()).to.equal(false);
     })
@@ -173,12 +179,18 @@ describe("Oracle", function() {
 
         await oracle.connect(trustee0).judge(true, 0);
         await oracle.connect(trustee1).judge(true, 1);
-        await oracle.connect(trustee2).judge(true, 2);
+        await expect(oracle.connect(trustee2).judge(true, 2))
+            .to.emit(oracleFactory, "Transfer")
+            .withArgs(constants.AddressZero, owner.address, 1);
         let latestBlock = await ethers.provider.getBlock("latest");
         expect(await oracle.fulfillmentTime()).to.equal(BigNumber.from(latestBlock.timestamp));
 
-        await oracle.connect(trustee1).judge(false, 1);
-        await oracle.connect(trustee3).judge(true, 3);
+        await expect(oracle.connect(trustee1).judge(false, 1))
+            .to.emit(oracleFactory, "Transfer")
+            .withArgs(owner.address, constants.AddressZero, 1);
+        await expect(oracle.connect(trustee3).judge(true, 3))
+            .to.emit(oracleFactory, "Transfer")
+            .withArgs(constants.AddressZero, owner.address, 2);
         latestBlock = await ethers.provider.getBlock("latest");
         expect(await oracle.fulfillmentTime()).to.equal(BigNumber.from(latestBlock.timestamp));
     })
@@ -208,13 +220,13 @@ describe("Oracle", function() {
         expect(await oracle.getWills(0)).to.not.equal(await oracle.getWills(1));
         
         await expect(oracle.connect(owner).createWill(alice.address, 300))
-        .to.emit(oracle, "WillCreated")
-        .withArgs(
-            owner.address, 
-            alice.address,
-            await oracle.getWills(2),
-            2
-            );
+            .to.emit(oracle, "WillCreated")
+            .withArgs(
+                owner.address, 
+                alice.address,
+                await oracle.getWills(2),
+                2
+                );
     })
 
     it("Should revert createWill from other than owner", async function() {
