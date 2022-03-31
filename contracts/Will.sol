@@ -34,21 +34,6 @@ contract Will is IWill, Ownable {
         emit TransferReceiver(address(0), receiver);
     }
 
-    // It is not neccessarily important to use deposit function
-    function depositETH() external override payable {
-        emit TransferETH(msg.sender, address(this), msg.value);
-    }
-
-    function withdrawETH(address payable to, uint256 value) external override onlyOwner {
-        require(address(this).balance >= value, "Vault: Insufficient value");
-
-        // To can receive Ether since the address of to is payable
-        (bool success, ) = to.call{value: value}("");
-        require(success, "Failed to send Ether");
-
-        emit TransferETH(address(this), to, value);
-    }
-
     function changeOracle(address _oracle) external override onlyOwner {
         oracle = _oracle;
     }
@@ -76,13 +61,13 @@ contract Will is IWill, Ownable {
         emit TransferETH(address(this), to, value);
     }
 
-    function claim20(address[] calldata tokens, address to, uint256 amount) external override {
+    function claim20(address[] calldata tokens, address to, uint256[] calldata amounts) external override {
         require(receiver == msg.sender, "Vault: Not receiver");
         require(condition(), "Vault: Condition not met");
         require(block.timestamp >= IOracle(oracle).fulfillmentTime() + gracePeriod, "Vault:Grace period not over");
 
         for (uint i = 0; i < tokens.length; i++) {
-            IERC20(tokens[i]).transferFrom(owner(), to, amount);
+            IERC20(tokens[i]).transferFrom(owner(), to, amounts[i]);
         }
     }
 
