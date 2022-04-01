@@ -57,3 +57,30 @@ export async function token20Fixture(
 
     return { token20A, token20B, token20C };
 }
+
+interface Token721Fixture {
+    token721A: Contract;
+    token721B: Contract;
+    token721C: Contract;
+}
+
+export async function token721Fixture(
+    initialAccount: SignerWithAddress,
+    initialIds: BigNumber[]
+): Promise<Token721Fixture> {
+    const Token721 = await ethers.getContractFactory("ERC721Mock");
+    const token721A = await Token721.deploy("Token721A", "T721A");
+    await token721A.deployed();
+    await token721A.mint(initialAccount.address, initialIds[0]);
+
+    const token721B = await Token721.deploy("Token721B", "T721B");
+    await token721B.deployed();
+    await token721B.mint(initialAccount.address, initialIds[1]);
+
+    const token721C = await Token721.deploy("Token721C", "T721C");
+    await token721C.deployed();
+    await token721C.mint(initialAccount.address, initialIds[2]);
+    await token721C.mint(initialAccount.address, initialIds[3]);
+
+    return { token721A, token721B, token721C };
+}

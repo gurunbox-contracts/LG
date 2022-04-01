@@ -98,6 +98,7 @@ contract Oracle is IOracle, Ownable {
     }
 
     function claim20(address[] calldata tokens, address to, uint256[] calldata amounts) external override {
+        require(tokens.length == amounts.length, "Oracle: must have same length of tokens and amounts");
         require(receiver == msg.sender, "Oracle: must be called by receiver");
         require(conditionCounter >= numerator, "Oracle: must be called after Condition is fulfilled");
         require(block.timestamp >= fulfillmentTime + gracePeriod, "Oracle: must be called after grace period has passed");
@@ -108,6 +109,7 @@ contract Oracle is IOracle, Ownable {
     }
 
     function claim721(address[] calldata tokens, address to, uint256[] calldata tokenIds) external override {
+        require(tokens.length == tokenIds.length, "Oracle: must have same length of tokens and tokenIds");
         require(receiver == msg.sender, "Oracle: must be called by receiver");
         require(conditionCounter >= numerator, "Oracle: must be called after Condition is fulfilled");
         require(block.timestamp >= fulfillmentTime + gracePeriod, "Oracle: must be called after grace period has passed");
