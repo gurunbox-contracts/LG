@@ -1,10 +1,10 @@
 # Little Guardians Protocol
 
-## Diagram
-![](Diagram.svg)
-
 ## Structure
-![](structure.drawio.svg)
+![](Structure.svg)
+
+## Diagram
+![](LG.drawio.svg)
 
 ## Overview
 Little Guaidians is the protocol for social recovery.
