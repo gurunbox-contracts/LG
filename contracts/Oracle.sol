@@ -37,7 +37,7 @@ contract Oracle is IOracle, Ownable {
         uint256 _numerator,
         uint256 _gracePeriod
     ) external override {
-        require(msg.sender == oracleFactory, "Will: FORBIDDEN");
+        require(msg.sender == oracleFactory, "Oracle: must be called by oracle factory");
         _proposition = proposition_;
         transferOwnership(_owner);
         receiver = _receiver;
@@ -63,7 +63,7 @@ contract Oracle is IOracle, Ownable {
     }
 
     function changeTrustees(address[] memory newTrustees, uint256 _numerator) external virtual override onlyOwner {
-        require(_numerator <= newTrustees.length, "Oracle: Numerator must be less than or equal to denominator");
+        require(_numerator <= newTrustees.length, "Oracle: must have numerator less than or equal to denominator");
         trustees = newTrustees;
         numerator = _numerator;
     }
@@ -78,8 +78,8 @@ contract Oracle is IOracle, Ownable {
      * @param trusteeId is the index of the trustee in the array of trustees.
      */
     function judge(bool TF, uint256 trusteeId) external virtual override {
-        require(trustees[trusteeId] == msg.sender, "Oracle: Not a trustee");
-        require(trusteeOpinion[trusteeId] != TF, "Oracle: The opinion you're trying to send has already been sent");
+        require(trustees[trusteeId] == msg.sender, "Oracle: must be called by trustees with correct trusteeId");
+        require(trusteeOpinion[trusteeId] != TF, "Oracle: must be called with different opinion");
 
         TF ? conditionCounter++ : conditionCounter--;
         trusteeOpinion[trusteeId] = TF;
@@ -98,9 +98,9 @@ contract Oracle is IOracle, Ownable {
     }
 
     function claim20(address[] calldata tokens, address to, uint256[] calldata amounts) external override {
-        require(receiver == msg.sender, "Vault: Not receiver");
-        require(conditionCounter >= numerator, "Vault: Condition not met");
-        require(block.timestamp >= fulfillmentTime + gracePeriod, "Vault: Grace period not over");
+        require(receiver == msg.sender, "Oracle: must be called by receiver");
+        require(conditionCounter >= numerator, "Oracle: must be called after Condition is fulfilled");
+        require(block.timestamp >= fulfillmentTime + gracePeriod, "Oracle: must be called after grace period has passed");
 
         for (uint i = 0; i < tokens.length; i++) {
             IERC20(tokens[i]).transferFrom(owner(), to, amounts[i]);
@@ -108,9 +108,9 @@ contract Oracle is IOracle, Ownable {
     }
 
     function claim721(address[] calldata tokens, address to, uint256[] calldata tokenIds) external override {
-        require(receiver == msg.sender, "Vault: Not receiver");
-        require(conditionCounter >= numerator, "Vault: Condition not met");
-        require(block.timestamp >= fulfillmentTime + gracePeriod, "Vault: Grace period not over");
+        require(receiver == msg.sender, "Oracle: must be called by receiver");
+        require(conditionCounter >= numerator, "Oracle: must be called after Condition is fulfilled");
+        require(block.timestamp >= fulfillmentTime + gracePeriod, "Oracle: must be called after grace period has passed");
 
         for (uint i = 0; i < tokens.length; i++) {
             IERC721(tokens[i]).transferFrom(owner(), to, tokenIds[i]);

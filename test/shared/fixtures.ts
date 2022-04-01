@@ -40,3 +40,20 @@ interface Token20Fixture {
     token20B: Contract;
     token20C: Contract;
 }
+
+export async function token20Fixture(
+    initialAccount: SignerWithAddress,
+    initialBalance: BigNumber
+): Promise<Token20Fixture> {
+    const Token20 = await ethers.getContractFactory("ERC20Mock");
+    const token20A = await Token20.deploy("Token20A", "T20A", initialAccount.address, initialBalance);
+    await token20A.deployed();
+
+    const token20B = await Token20.deploy("Token20B", "T20B", initialAccount.address, initialBalance);
+    await token20B.deployed();
+
+    const token20C = await Token20.deploy("Token20C", "T20C", initialAccount.address, initialBalance);
+    await token20C.deployed();
+
+    return { token20A, token20B, token20C };
+}
