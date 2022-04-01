@@ -4621,10 +4621,10 @@
     "ajv" "^6.12.3"
     "har-schema" "^2.0.0"
 
-"hardhat@^2.0.0", "hardhat@^2.9.1":
-  "integrity" "sha512-q0AkYXV7R26RzyAkHGQRhhQjk508pseVvH3wSwZwwPUbvA+tjl0vMIrD4aFQDonRXkrnXX4+5KglozzjSd0//Q=="
-  "resolved" "https://registry.npmjs.org/hardhat/-/hardhat-2.9.1.tgz"
-  "version" "2.9.1"
+"hardhat@^2.0.0", "hardhat@^2.9.2":
+  "integrity" "sha512-elTcUK1EdFverWinybQ+DoJzsM6sgiHUYs0ZYNNXMfESty6ESHiFSwkfJsC88/q09vmIz6YVaMh73BYnYd+feQ=="
+  "resolved" "https://registry.npmjs.org/hardhat/-/hardhat-2.9.2.tgz"
+  "version" "2.9.2"
   dependencies:
     "@ethereumjs/block" "^3.6.0"
     "@ethereumjs/blockchain" "^5.5.0"
