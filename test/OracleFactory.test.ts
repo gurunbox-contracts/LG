@@ -149,6 +149,6 @@ describe("OracleFactory", function() {
             trustees, 
             1,
             gracePeriod
-            )).to.be.revertedWith("Create2: Failed on deploy");
+            )).to.be.reverted;
     })
 })

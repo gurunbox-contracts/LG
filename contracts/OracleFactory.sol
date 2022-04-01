@@ -8,7 +8,6 @@ import { IOracleFactory } from './interfaces/IOracleFactory.sol';
 import { IOracle } from './interfaces/IOracle.sol'; 
 import { Oracle } from './Oracle.sol';
 import { Counters } from './utils/Counters.sol';
-import { Create2 } from './utils/Create2.sol';
 
 contract OracleFactory is ERC721, Ownable, IOracleFactory {
     using Counters for Counters.Counter;
@@ -51,9 +50,9 @@ contract OracleFactory is ERC721, Ownable, IOracleFactory {
         uint256 _numerator,
         uint256 _gracePeriod
     ) external override returns (address oracle) {
-        bytes memory bytecode = type(Oracle).creationCode;
-        bytes32 salt = keccak256(abi.encodePacked(name_, _owner));
-        oracle = Create2.deploy(0, salt, bytecode);
+
+        bytes32 _salt = keccak256(abi.encodePacked(name_, _owner));
+        oracle = address(new Oracle{salt: _salt}());
 
         IOracle(oracle).initialize(name_, _owner, _receiver, _trustees, _numerator, _gracePeriod);
         getOracle[nextOracleId] = oracle;

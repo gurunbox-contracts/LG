@@ -240,4 +240,16 @@ describe("Oracle", function() {
             expect(await oracle.fulfillmentTime()).to.not.equal(BigNumber.from(latestBlock.timestamp));
         })
     })
+
+    describe("claim20()", () => {
+
+        beforeEach(async function() {
+
+        })
+        
+        it("Should transfer ERC20 tokens when the receiver call after fulfillmentTime and gracePeriod have passed", async function() {
+
+        })
+
+    })
 })

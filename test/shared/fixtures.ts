@@ -35,36 +35,8 @@ export async function oracleFixture(
     return { oracleFactory, oracle };
 }
 
-// interface WillFixture extends OracleFixture {
-//     token20: Contract;
-//     token721: Contract;
-// }
-// 
-// export async function willFixture(
-//     proposition: string,
-//     owner: SignerWithAddress,
-//     receiver: SignerWithAddress,
-//     trustees: string[],
-//     numerator: number,
-//     gracePeriod: BigNumber
-// ): Promise<WillFixture> {
-//     const fixture = await oracleFixture(
-//         proposition,
-//         owner,
-//         receiver,
-//         trustees,
-//         numerator,
-//         gracePeriod
-//     );
-//     const Token20 = await ethers.getContractFactory("Token20");
-//     const token20 = await Token20.deploy("Test20", "T20");
-//     const Token721 = await ethers.getContractFactory("Token721");
-//     const token721 = await Token721.deploy("Test721", "T721", "http://example.com/");
-//     await token20.deployed();
-//     await token721.deployed();
-//     return {
-//         ...fixture,
-//         token20,
-//         token721
-//     };
-// }
+interface Token20Fixture {
+    token20A: Contract;
+    token20B: Contract;
+    token20C: Contract;
+}
