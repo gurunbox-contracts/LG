@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 
 interface IOracle {
     event Judged(address trustee, bool TF);
+    event PartyChanged(address owner, address receiver, address[] trustees);
 
     function oracleFactory() external view returns (address);
     function receiver() external view returns (address);
@@ -15,7 +16,7 @@ interface IOracle {
     function trusteeOpinion(uint256 trusteeId) external view returns (bool);
 
     function condition() external view returns (bool);
-    function proposition() external view returns (string memory);
+    function name() external view returns (string memory);
     function trusteesLength() external view returns (uint256);
     
     function initialize(

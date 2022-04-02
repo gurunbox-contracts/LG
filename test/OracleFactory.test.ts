@@ -124,7 +124,7 @@ describe("OracleFactory", function() {
         let oracleAddress = await oracleFactory.getOracle(0);
         let oracle = await ethers.getContractAt("Oracle", oracleAddress);
 
-        expect(await oracle.proposition()).to.equal("Test");
+        expect(await oracle.name()).to.equal("Test");
         expect(await oracle.owner()).to.equal(owner.address);
         expect(await oracle.receiver()).to.equal(receiver0.address);
         expect(await oracle.trustees(0)).to.equal(trustee0.address);

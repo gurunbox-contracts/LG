@@ -62,7 +62,7 @@ describe("Oracle", function() {
     })
 
     it("Should return the initialized values", async function() {
-        expect(await oracle.proposition()).to.equal("Test");
+        expect(await oracle.name()).to.equal("Test");
 
         expect(await oracle.owner()).to.equal(owner.address);
 
@@ -104,7 +104,9 @@ describe("Oracle", function() {
 
     describe("changeReceiver()", () => {
         it("Should change receiver when called by owner", async function() {
-            await oracle.connect(owner).changeReceiver(alice.address);
+            expect(await oracle.connect(owner).changeReceiver(alice.address)
+                ).to.emit(oracle, "PartyChanged")
+                .withArgs(owner.address, alice.address, trustees);
             expect(await oracle.receiver()).to.equal(alice.address);
         })
 
@@ -124,7 +126,9 @@ describe("Oracle", function() {
                 trustee3.address,
                 trustee4.address,
             ]; 
-            await oracle.connect(owner).changeTrustees(newTrustees, 1)
+            expect(await oracle.connect(owner).changeTrustees(newTrustees, 1)
+                ).to.emit(oracle, "PartyChanged")
+                .withArgs(owner.address, receiver0.address, newTrustees);
     
             expect(await oracle.trustees(0)).to.equal(alice.address);
             expect(await oracle.trustees(1)).to.equal(bob.address);
