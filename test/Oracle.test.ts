@@ -102,6 +102,20 @@ describe("Oracle", function() {
         })
     })
 
+    describe("transferOwnership()", () => {
+        it("Should transfer ownership", async function() {
+            expect(await oracle.transferOwnership(alice.address)
+                ).to.emit(oracle, "PartyChanged")
+                .withArgs(alice.address);
+
+            expect(await oracle.owner()).to.equal(alice.address);
+        })
+
+        it("Should revert when called by other than owner", async function() {
+            await expect(oracle.connect(alice).transferOwnership(bob.address)).to.be.revertedWith("Oracle: must be called by owner");
+        })
+    })
+
     describe("changeReceiver()", () => {
         it("Should change receiver when called by owner", async function() {
             expect(await oracle.connect(owner).changeReceiver(alice.address)

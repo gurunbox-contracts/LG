@@ -10,8 +10,6 @@ import { IERC20 } from './interfaces/IERC20.sol';
 import { IERC721 } from './interfaces/IERC721.sol';
 
 contract Oracle is IOracle, Ownable {
-    // address private _owner;
-
     string private _name;
     uint256 private _alertTokenId;
     
@@ -63,10 +61,8 @@ contract Oracle is IOracle, Ownable {
     }
 
     function _transferOwnership(address newOwner) internal override(Ownable) {
-        // address oldOwner = _owner;
-        // _owner = newOwner;
-        // emit OwnershipTransferred(oldOwner, newOwner);
         super._transferOwnership(newOwner);
+
         emit PartyChanged(owner(), receiver, trustees);
     }
 
